@@ -128,12 +128,12 @@ body {
 /* Home Page */
 .home-hero {
   text-align: center;
-  padding: 64px 24px 56px;
-  min-height: 220px;
+  padding: 40px 24px 36px;
+  min-height: 180px;
   background: linear-gradient(160deg, #7c3aed 0%, #8b5cf6 40%, #a78bfa 100%);
   border-radius: 16px;
   color: white;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -162,45 +162,45 @@ body {
 }
 
 .hero-orb-1 {
-  width: 180px;
-  height: 180px;
-  top: -40px;
-  right: -40px;
+  width: 140px;
+  height: 140px;
+  top: -30px;
+  right: -30px;
   background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
   animation-delay: 0s;
 }
 
 .hero-orb-2 {
-  width: 140px;
-  height: 140px;
-  bottom: -30px;
-  left: -30px;
+  width: 100px;
+  height: 100px;
+  bottom: -20px;
+  left: -20px;
   background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
   animation-delay: 4s;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-8px) scale(1.02); }
+  50% { transform: translateY(-6px) scale(1.02); }
 }
 
 .home-brand {
-  font-size: 3rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
   text-shadow: 0 2px 12px rgba(0,0,0,0.12);
   position: relative;
   z-index: 1;
 }
 
 .home-english {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 20px;
+  opacity: 0.75;
+  margin-bottom: 12px;
   position: relative;
   z-index: 1;
 }
