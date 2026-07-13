@@ -10,6 +10,7 @@ import ChineseChallengePage from './pages/ChineseChallengePage';
 import QuickReviewPage from './pages/QuickReviewPage';
 import ChoiceQuizPage from './pages/ChoiceQuizPage';
 import FavoritesPage from './pages/FavoritesPage';
+import FavoriteQuizPage from './pages/FavoriteQuizPage';
 import './index.css';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/quick-review" element={<QuickReviewPage />} />
             <Route path="/choice-quiz" element={<ChoiceQuizPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/favorite-quiz" element={<FavoriteQuizPage />} />
             <Route path="/progress" element={<ProgressPage />} />
           </Routes>
         </main>

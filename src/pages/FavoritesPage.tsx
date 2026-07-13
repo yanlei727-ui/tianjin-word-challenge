@@ -131,10 +131,10 @@ export default function FavoritesPage() {
       {favorites.length > 0 && (
         <div className="favorites-actions">
           <Link
-            to={`/choice-quiz?module=all&mode=favorites`}
+            to="/favorite-quiz"
             className="btn-action btn-primary btn-large"
           >
-            📝 重点词训练
+            ⭐ 重点词训练
           </Link>
         </div>
       )}
