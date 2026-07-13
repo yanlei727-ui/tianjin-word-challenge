@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import words from '../data/words.json';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   loadProgress,
   saveLevelScore,
@@ -10,20 +9,25 @@ import {
 } from '../utils/storage';
 import { generateLevelQuiz, generateWrongBookQuiz } from '../utils/quiz';
 import { speakWord, speakSentence, stopSpeaking } from '../utils/speech';
+import { getModuleWords, type ModuleKey } from '../utils/modules';
 import type { QuizQuestion } from '../utils/quiz';
 
-const TOTAL_LEVELS = 14;
-
-function getLevelWordIds(level: number): number[] {
-  const start = (level - 1) * 10 + 1;
-  const end = level === 14 ? 136 : level * 10;
-  return words.filter((w) => w.id >= start && w.id <= end).map((w) => w.id);
+function getLevelWordIds(level: number, moduleWords: ReturnType<typeof getModuleWords>): number[] {
+  const wordsPerLevel = 10;
+  const start = (level - 1) * wordsPerLevel;
+  const end = Math.min(start + wordsPerLevel, moduleWords.length);
+  return moduleWords.slice(start, end).map((w) => w.id);
 }
 
 type Phase = 'select' | 'learn' | 'quiz' | 'spell' | 'result';
 
 export default function ChallengePage() {
-  const [progress, setProgress] = useState(loadProgress());
+  const [searchParams] = useSearchParams();
+  const module: ModuleKey = (searchParams.get('module') as ModuleKey) || 'noun';
+  const moduleWords = getModuleWords(module);
+  const totalLevels = Math.ceil(moduleWords.length / 10) || 1;
+
+  const [progress, setProgress] = useState(loadProgress(module));
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [phase, setPhase] = useState<Phase>('select');
   const [learnIndex, setLearnIndex] = useState(0);
@@ -61,7 +65,7 @@ export default function ChallengePage() {
     setShowResult(false);
     setWrongQuizMode(false);
 
-    const wordIds = getLevelWordIds(level);
+    const wordIds = getLevelWordIds(level, moduleWords);
     const qs = generateLevelQuiz(wordIds);
     setQuestions(qs);
   };
@@ -82,7 +86,7 @@ export default function ChallengePage() {
     setSelectedLevel(null);
   };
 
-  const levelWords = selectedLevel ? getLevelWordIds(selectedLevel).map((id) => words.find((w) => w.id === id)!) : [];
+  const levelWords = selectedLevel ? getLevelWordIds(selectedLevel, moduleWords).map((id) => moduleWords.find((w) => w.id === id)!) : [];
 
   const finishLearn = () => {
     setPhase('quiz');
@@ -102,10 +106,10 @@ export default function ChallengePage() {
     setIsCorrect(correct);
     if (correct) {
       setCorrectCount((c) => c + 1);
-      markWrongCorrect(currentQ.wordId);
+      markWrongCorrect(currentQ.wordId, module);
     } else {
       setWrongCount((w) => w + 1);
-      addWrongRecord(currentQ.wordId);
+      addWrongRecord(currentQ.wordId, module);
     }
   };
 
@@ -116,10 +120,10 @@ export default function ChallengePage() {
     setIsCorrect(correct);
     if (correct) {
       setCorrectCount((c) => c + 1);
-      markWrongCorrect(currentQ.wordId);
+      markWrongCorrect(currentQ.wordId, module);
     } else {
       setWrongCount((w) => w + 1);
-      addWrongRecord(currentQ.wordId);
+      addWrongRecord(currentQ.wordId, module);
     }
   };
 
@@ -140,17 +144,17 @@ export default function ChallengePage() {
     const stars = score >= 100 ? 3 : score >= 90 ? 2 : score >= 80 ? 1 : 0;
 
     if (selectedLevel && !wrongQuizMode) {
-      const p = saveLevelScore(selectedLevel, score, stars);
-      // Check if day 1 or day 2 is completed
+      const p = saveLevelScore(selectedLevel, score, stars, module);
+      const half = Math.ceil(totalLevels / 2);
       const day1Levels = Object.entries(p.levelScores)
-        .filter(([l, s]) => Number(l) <= 7 && s.completed)
+        .filter(([l, s]) => Number(l) <= half && s.completed)
         .length;
       const day2Levels = Object.entries(p.levelScores)
-        .filter(([l, s]) => Number(l) >= 8 && s.completed)
+        .filter(([l, s]) => Number(l) > half && s.completed)
         .length;
-      if (day1Levels >= 7) p.dayProgress.day1 = true;
-      if (day2Levels >= 7) p.dayProgress.day2 = true;
-      saveProgress(p);
+      if (day1Levels >= half) p.dayProgress.day1 = true;
+      if (day2Levels >= totalLevels - half) p.dayProgress.day2 = true;
+      saveProgress(p, module);
       setProgress(p);
     }
 
@@ -161,7 +165,7 @@ export default function ChallengePage() {
     <div className="challenge-select">
       <div className="challenge-header">
         <h2>🎯 闯关模式</h2>
-        <p>共 {TOTAL_LEVELS} 关，每关10个单词（最后一关6个）</p>
+        <p>共 {totalLevels} 关，每关10个单词</p>
       </div>
 
       <div className="challenge-toggle">
@@ -185,10 +189,10 @@ export default function ChallengePage() {
       )}
 
       <div className="level-grid">
-        {Array.from({ length: TOTAL_LEVELS }, (_, i) => i + 1).map((level) => {
+        {Array.from({ length: totalLevels }, (_, i) => i + 1).map((level) => {
           const unlocked = isLevelUnlocked(level);
           const score = progress.levelScores[level];
-          const wordCount = level === 14 ? 6 : 10;
+          const levelWordCount = Math.min(10, moduleWords.length - (level - 1) * 10);
           return (
             <button
               key={level}
@@ -197,7 +201,7 @@ export default function ChallengePage() {
               disabled={!unlocked}
             >
               <div className="level-number">第 {level} 关</div>
-              <div className="level-words">{wordCount} 个单词</div>
+              <div className="level-words">{levelWordCount} 个单词</div>
               {score && (
                 <div className="level-score">
                   <span className="level-stars">
@@ -486,7 +490,7 @@ export default function ChallengePage() {
                 再练一次
               </button>
             )}
-            <Link to="/wrongbook" className="btn-action btn-orange">
+            <Link to={`/wrongbook?module=${module}`} className="btn-action btn-orange">
               查看错题本
             </Link>
             <button className="btn-action" onClick={() => { setPhase('select'); setSelectedLevel(null); }}>

@@ -6,6 +6,9 @@ import WordListPage from './pages/WordListPage';
 import ChallengePage from './pages/ChallengePage';
 import WrongBookPage from './pages/WrongBookPage';
 import ProgressPage from './pages/ProgressPage';
+import ChineseChallengePage from './pages/ChineseChallengePage';
+import QuickReviewPage from './pages/QuickReviewPage';
+import ChoiceQuizPage from './pages/ChoiceQuizPage';
 import './index.css';
 
 export default function App() {
@@ -22,6 +25,9 @@ export default function App() {
             <Route path="/wordlist" element={<WordListPage />} />
             <Route path="/challenge" element={<ChallengePage />} />
             <Route path="/wrongbook" element={<WrongBookPage />} />
+            <Route path="/chinese-challenge" element={<ChineseChallengePage />} />
+            <Route path="/quick-review" element={<QuickReviewPage />} />
+            <Route path="/choice-quiz" element={<ChoiceQuizPage />} />
             <Route path="/progress" element={<ProgressPage />} />
           </Routes>
         </main>

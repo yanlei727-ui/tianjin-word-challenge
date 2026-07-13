@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import words from '../data/words.json';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   loadProgress,
   removeFromWrongBook,
 } from '../utils/storage';
 import { speakWord } from '../utils/speech';
+import { getModuleWords, type ModuleKey } from '../utils/modules';
 
 export default function WrongBookPage() {
-  const [progress, setProgress] = useState(loadProgress());
+  const [searchParams] = useSearchParams();
+  const module: ModuleKey = (searchParams.get('module') as ModuleKey) || 'noun';
+  const allWords = getModuleWords(module);
+  const [progress, setProgress] = useState(loadProgress(module));
   const navigate = useNavigate();
 
   const wrongRecords = progress.wrongBook;
 
   const handleRemove = (wordId: number) => {
-    const p = removeFromWrongBook(wordId);
+    const p = removeFromWrongBook(wordId, module);
     setProgress(p);
   };
 
@@ -27,7 +30,7 @@ export default function WrongBookPage() {
 
       {wrongRecords.length > 0 && (
         <div className="wrongbook-actions">
-          <button className="btn-action btn-primary btn-large" onClick={() => navigate('/challenge')}>
+          <button className="btn-action btn-primary btn-large" onClick={() => navigate(`/challenge?module=${module}`)}>
             🎯 错词专项练习
           </button>
         </div>
@@ -42,7 +45,7 @@ export default function WrongBookPage() {
       ) : (
         <div className="wrongbook-list">
           {wrongRecords.map((record) => {
-            const word = words.find((w) => w.id === record.wordId);
+            const word = allWords.find((w) => w.id === record.wordId);
             if (!word) return null;
             return (
               <div key={record.wordId} className="wrongbook-card">

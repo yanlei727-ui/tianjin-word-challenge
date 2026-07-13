@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import words from '../data/words.json';
+import { useSearchParams } from 'react-router-dom';
 import {
   loadProgress,
   saveProgress,
@@ -8,19 +8,24 @@ import {
   removeUnfamiliar,
 } from '../utils/storage';
 import { speakWord } from '../utils/speech';
+import { getModuleWords, type ModuleKey } from '../utils/modules';
 
 type SortMode = 'alpha' | 'group';
 type FilterMode = 'all' | 'learned' | 'mastered' | 'unfamiliar' | 'wrong' | 'unlearned';
 
 export default function WordListPage() {
+  const [searchParams] = useSearchParams();
+  const module: ModuleKey = (searchParams.get('module') as ModuleKey) || 'noun';
+  const allWords = getModuleWords(module);
+
   const [sortMode, setSortMode] = useState<SortMode>('group');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [search, setSearch] = useState('');
-  const [progress, setProgress] = useState(loadProgress());
+  const [progress, setProgress] = useState(loadProgress(module));
   const [showMeanings, setShowMeanings] = useState(true);
 
   const getFilteredWords = () => {
-    let list = [...words];
+    let list = [...allWords];
 
     if (filterMode === 'learned') {
       list = list.filter((w) => progress.learned.includes(w.id));
@@ -57,20 +62,20 @@ export default function WordListPage() {
   const handleToggleMastered = (wordId: number) => {
     if (progress.mastered.includes(wordId)) {
       const p = { ...progress, mastered: progress.mastered.filter((id) => id !== wordId) };
-      saveProgress(p);
+      saveProgress(p, module);
       setProgress(p);
     } else {
-      const p = markMastered(wordId);
+      const p = markMastered(wordId, module);
       setProgress(p);
     }
   };
 
   const handleToggleUnfamiliar = (wordId: number) => {
     if (progress.unfamiliar.includes(wordId)) {
-      const p = removeUnfamiliar(wordId);
+      const p = removeUnfamiliar(wordId, module);
       setProgress(p);
     } else {
-      const p = markUnfamiliar(wordId);
+      const p = markUnfamiliar(wordId, module);
       setProgress(p);
     }
   };

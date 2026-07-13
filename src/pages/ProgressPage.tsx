@@ -1,19 +1,24 @@
 import { useState } from 'react';
-import words from '../data/words.json';
+import { useSearchParams } from 'react-router-dom';
 import {
   loadProgress,
   exportProgress,
   importProgress,
   resetProgress,
 } from '../utils/storage';
+import { getModuleWords, type ModuleKey } from '../utils/modules';
 
 export default function ProgressPage() {
-  const [progress, setProgress] = useState(loadProgress());
+  const [searchParams] = useSearchParams();
+  const module: ModuleKey = (searchParams.get('module') as ModuleKey) || 'noun';
+  const allWords = getModuleWords(module);
+
+  const [progress, setProgress] = useState(loadProgress(module));
   const [importText, setImportText] = useState('');
   const [importMsg, setImportMsg] = useState('');
   const [showReset, setShowReset] = useState(false);
 
-  const totalWords = words.length;
+  const totalWords = allWords.length;
   const learned = progress.learned.length;
   const mastered = progress.mastered.length;
   const unfamiliar = progress.unfamiliar.length;
@@ -21,7 +26,7 @@ export default function ProgressPage() {
   const completedLevels = Object.values(progress.levelScores).filter((s) => s.completed).length;
 
   const handleExport = () => {
-    const json = exportProgress();
+    const json = exportProgress(module);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -38,7 +43,7 @@ export default function ProgressPage() {
     }
     const ok = importProgress(importText);
     if (ok) {
-      setProgress(loadProgress());
+      setProgress(loadProgress(module));
       setImportMsg('导入成功！');
       setImportText('');
     } else {
@@ -47,8 +52,8 @@ export default function ProgressPage() {
   };
 
   const handleReset = () => {
-    resetProgress();
-    setProgress(loadProgress());
+    resetProgress(module);
+    setProgress(loadProgress(module));
     setShowReset(false);
   };
 

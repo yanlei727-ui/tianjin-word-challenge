@@ -2,10 +2,10 @@ import { NavLink } from 'react-router-dom';
 
 const navItems = [
   { to: '/', label: '首页', icon: '🏠' },
-  { to: '/learn', label: '学习', icon: '📖' },
-  { to: '/wordlist', label: '单词表', icon: '📋' },
+  { to: '/quick-review', label: '识词', icon: '⚡' },
+  { to: '/choice-quiz', label: '选择', icon: '📝' },
   { to: '/challenge', label: '闯关', icon: '🎯' },
-  { to: '/wrongbook', label: '错题本', icon: '📝' },
+  { to: '/wrongbook', label: '错词本', icon: '📋' },
   { to: '/progress', label: '进度', icon: '📊' },
 ];
 
