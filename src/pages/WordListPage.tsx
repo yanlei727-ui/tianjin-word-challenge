@@ -148,7 +148,10 @@ export default function WordListPage() {
                 <span className="wl-card-phonetic">{w.phonetic}</span>
               </div>
               <div className="wl-card-meaning">{w.meaning}</div>
-              <div className="wl-card-example">{w.example}</div>
+              <div className="wl-card-example">
+                <div className="wl-example-en">{w.example}</div>
+                <div className="wl-example-zh">{w.exampleZh}</div>
+              </div>
             </div>
             <div className="wl-card-right">
               <button
