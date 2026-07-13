@@ -887,6 +887,117 @@ body {
   max-width: 1000px;
 }
 
+.wordlist-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.wordlist-icon {
+  font-size: 2rem;
+}
+
+.wordlist-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 0;
+  flex: 1;
+}
+
+.wordlist-count {
+  font-size: 0.9rem;
+  color: var(--gray-500);
+}
+
+.wordlist-actions-top {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.wordlist-actions-top .btn-primary {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Full card layout */
+.wordlist-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.wordlist-card-full {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+
+.wordlist-card-full:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.wl-card-header {
+  margin-bottom: 12px;
+}
+
+.wl-card-word-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.wl-card-word-row .wl-word {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.wl-pos {
+  font-size: 0.8rem;
+  color: var(--primary);
+  background: rgba(79, 70, 229, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.wl-card-example {
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 12px;
+  border-left: 3px solid var(--primary);
+}
+
+.wl-example-en {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.wl-example-zh {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  line-height: 1.4;
+}
+
+.wl-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .wordlist-toolbar {
   background: white;
   border-radius: var(--radius);

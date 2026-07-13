@@ -15,9 +15,9 @@ export default function HomePage() {
         <p className="home-subtitle">中考高频词汇 · 分类专项训练</p>
       </div>
 
-      {/* 词库分类 */}
+      {/* 单词本浏览 */}
       <section className="home-section">
-        <h2 className="section-title">📚 词库分类</h2>
+        <h2 className="section-title">📚 单词本</h2>
         <div className="module-selector">
           {MODULES.map((m) => {
             const words = getModuleWords(m.key);
@@ -25,7 +25,7 @@ export default function HomePage() {
             return (
               <Link
                 key={m.key}
-                to={`/chinese-challenge?module=${m.key}`}
+                to={`/wordlist?module=${m.key}`}
                 className={`module-card ${count === 0 ? 'empty' : ''}`}
               >
                 <span className="module-icon">{m.icon}</span>
