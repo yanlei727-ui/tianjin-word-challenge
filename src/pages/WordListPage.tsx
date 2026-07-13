@@ -2,14 +2,14 @@ import { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
   loadProgress,
-  saveProgress,
-  markMastered,
-  markUnfamiliar,
-  removeUnfamiliar,
+  loadFavorites,
+  addFavorite,
+  removeFavorite,
 } from '../utils/storage';
 import { speakWord } from '../utils/speech';
 import { getModuleWords, getModuleInfo, type ModuleKey } from '../utils/modules';
 
+type FilterMode = 'all' | 'unlearned' | 'mastered' | 'favorite';
 type FilterLetter = string | 'ALL';
 
 export default function WordListPage() {
@@ -19,8 +19,14 @@ export default function WordListPage() {
   const moduleInfo = getModuleInfo(module);
 
   const [search, setSearch] = useState('');
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [filterLetter, setFilterLetter] = useState<FilterLetter>('ALL');
-  const [progress, setProgress] = useState(loadProgress(module));
+  const [progress] = useState(loadProgress(module));
+  const [favorites, setFavorites] = useState(loadFavorites());
+
+  const favoriteIds = useMemo(() => {
+    return new Set(favorites.filter(f => f.module === module).map(f => f.wordId));
+  }, [favorites, module]);
 
   const alphabet = useMemo(() => {
     const letters = new Set(allWords.map(w => w.word[0].toUpperCase()));
@@ -29,6 +35,14 @@ export default function WordListPage() {
 
   const filtered = useMemo(() => {
     let list = allWords;
+
+    if (filterMode === 'unlearned') {
+      list = list.filter(w => !progress.mastered.includes(w.id));
+    } else if (filterMode === 'mastered') {
+      list = list.filter(w => progress.mastered.includes(w.id));
+    } else if (filterMode === 'favorite') {
+      list = list.filter(w => favoriteIds.has(w.id));
+    }
 
     if (filterLetter !== 'ALL') {
       list = list.filter(w => w.word[0].toUpperCase() === filterLetter);
@@ -44,38 +58,32 @@ export default function WordListPage() {
     }
 
     return list;
-  }, [allWords, filterLetter, search]);
+  }, [allWords, filterMode, filterLetter, search, progress, favoriteIds]);
 
-  const handleToggleMastered = (wordId: number) => {
-    if (progress.mastered.includes(wordId)) {
-      const p = { ...progress, mastered: progress.mastered.filter((id) => id !== wordId) };
-      saveProgress(p, module);
-      setProgress(p);
+  const handleToggleFavorite = (wordId: number) => {
+    if (favoriteIds.has(wordId)) {
+      const updated = removeFavorite(wordId, module);
+      setFavorites(updated);
     } else {
-      const p = markMastered(wordId, module);
-      setProgress(p);
+      const updated = addFavorite(wordId, module);
+      setFavorites(updated);
     }
   };
 
-  const handleToggleUnfamiliar = (wordId: number) => {
-    if (progress.unfamiliar.includes(wordId)) {
-      const p = removeUnfamiliar(wordId, module);
-      setProgress(p);
-    } else {
-      const p = markUnfamiliar(wordId, module);
-      setProgress(p);
-    }
-  };
+  const masteredCount = progress.mastered.length;
+  const favoriteCount = favorites.filter(f => f.module === module).length;
 
   return (
     <div className="page wordlist-page">
-      <div className="wl-top-bar">
+      <div className="wl-header">
         <Link to="/" className="wl-back">← 返回</Link>
-        <span className="wl-module-name">{moduleInfo.icon} {moduleInfo.label}</span>
-        <span className="wl-total-count">{allWords.length} 词</span>
+        <div className="wl-title-area">
+          <h1 className="wl-title">{moduleInfo.icon} {moduleInfo.label}</h1>
+          <p className="wl-subtitle">{allWords.length}个中考高频词</p>
+        </div>
       </div>
 
-      <div className="wl-search-row">
+      <div className="wl-search">
         <input
           type="text"
           placeholder="搜索单词或中文..."
@@ -85,7 +93,34 @@ export default function WordListPage() {
         />
       </div>
 
-      <div className="wl-letter-filter">
+      <div className="wl-filter-row">
+        <button
+          className={`wl-filter-btn ${filterMode === 'all' ? 'active' : ''}`}
+          onClick={() => setFilterMode('all')}
+        >
+          全部 <span className="wl-filter-count">{allWords.length}</span>
+        </button>
+        <button
+          className={`wl-filter-btn ${filterMode === 'unlearned' ? 'active' : ''}`}
+          onClick={() => setFilterMode('unlearned')}
+        >
+          未掌握 <span className="wl-filter-count">{allWords.length - masteredCount}</span>
+        </button>
+        <button
+          className={`wl-filter-btn ${filterMode === 'mastered' ? 'active' : ''}`}
+          onClick={() => setFilterMode('mastered')}
+        >
+          已掌握 <span className="wl-filter-count">{masteredCount}</span>
+        </button>
+        <button
+          className={`wl-filter-btn ${filterMode === 'favorite' ? 'active' : ''}`}
+          onClick={() => setFilterMode('favorite')}
+        >
+          收藏 <span className="wl-filter-count">{favoriteCount}</span>
+        </button>
+      </div>
+
+      <div className="wl-letter-bar">
         <button
           className={`wl-letter-btn ${filterLetter === 'ALL' ? 'active' : ''}`}
           onClick={() => setFilterLetter('ALL')}
@@ -103,44 +138,41 @@ export default function WordListPage() {
         ))}
       </div>
 
-      <div className="wl-result-count">
-        显示 {filtered.length} 个单词
-      </div>
-
       <div className="wl-list">
         {filtered.map((w) => (
-          <div key={w.id} className="wl-item">
-            <div className="wl-item-main">
-              <div className="wl-item-word-row">
-                <span className="wl-item-word">{w.word}</span>
-                <span className="wl-item-pos">{w.partOfSpeech}</span>
-                <button className="wl-speak-btn" onClick={() => speakWord(w.word)}>
-                  🔊
-                </button>
+          <div key={w.id} className="wl-card">
+            <div className="wl-card-left">
+              <div className="wl-card-word">{w.word}</div>
+              <div className="wl-card-meta">
+                <span className="wl-card-pos">{w.partOfSpeech}</span>
+                <span className="wl-card-phonetic">{w.phonetic}</span>
               </div>
-              <div className="wl-item-phonetic">{w.phonetic}</div>
-              <div className="wl-item-meaning">{w.meaning}</div>
-              <div className="wl-item-example">{w.example}</div>
+              <div className="wl-card-meaning">{w.meaning}</div>
+              <div className="wl-card-example">{w.example}</div>
             </div>
-            <div className="wl-item-actions">
+            <div className="wl-card-right">
               <button
-                className={`wl-mini-btn ${progress.mastered.includes(w.id) ? 'active green' : ''}`}
-                onClick={() => handleToggleMastered(w.id)}
-                title="标记掌握"
+                className="wl-circle-btn speak"
+                onClick={() => speakWord(w.word)}
+                title="朗读"
               >
-                {progress.mastered.includes(w.id) ? '✓' : '○'}
+                🔊
               </button>
               <button
-                className={`wl-mini-btn ${progress.unfamiliar.includes(w.id) ? 'active orange' : ''}`}
-                onClick={() => handleToggleUnfamiliar(w.id)}
-                title="标记不熟"
+                className={`wl-circle-btn favorite ${favoriteIds.has(w.id) ? 'active' : ''}`}
+                onClick={() => handleToggleFavorite(w.id)}
+                title="收藏"
               >
-                {progress.unfamiliar.includes(w.id) ? '!' : '·'}
+                {favoriteIds.has(w.id) ? '★' : '☆'}
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      {filtered.length === 0 && (
+        <div className="wl-empty">没有找到匹配的单词</div>
+      )}
 
       <div className="wl-actions-bottom">
         <Link to={`/chinese-challenge?module=${module}`} className="btn-primary btn-large btn-purple">

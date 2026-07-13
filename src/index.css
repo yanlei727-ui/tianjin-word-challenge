@@ -23,6 +23,7 @@
   --radius: 12px;
   --radius-sm: 8px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
 }
@@ -950,45 +951,49 @@ body {
   color: var(--primary);
 }
 
-/* Word List Page - Compact Dictionary Style */
+/* Word List Page - 背单词本风格 */
 .wordlist-page {
   max-width: 800px;
 }
 
-.wl-top-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.wl-header {
   margin-bottom: 16px;
 }
 
 .wl-back {
+  display: inline-block;
   font-size: 0.85rem;
   color: var(--primary);
   text-decoration: none;
   font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .wl-back:hover {
   text-decoration: underline;
 }
 
-.wl-module-name {
-  flex: 1;
-  font-size: 1.1rem;
+.wl-title-area {
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.wl-title {
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--gray-800);
+  margin: 0 0 4px 0;
 }
 
-.wl-total-count {
+.wl-subtitle {
   font-size: 0.85rem;
   color: var(--gray-500);
-  background: var(--gray-100);
-  padding: 4px 10px;
-  border-radius: 12px;
+  margin: 0;
 }
 
-.wl-search-row {
+.wl-search {
   margin-bottom: 12px;
 }
 
@@ -1007,23 +1012,59 @@ body {
   border-color: var(--primary);
 }
 
-.wl-letter-filter {
+/* 学习状态筛选 */
+.wl-filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.wl-filter-btn {
+  flex: 1;
+  padding: 8px 4px;
+  border: 1px solid var(--gray-200);
+  background: white;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.wl-filter-btn:hover {
+  border-color: var(--gray-300);
+}
+
+.wl-filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.wl-filter-count {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* A-Z 字母筛选 */
+.wl-letter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
   margin-bottom: 12px;
-  padding: 8px;
+  padding: 6px;
   background: white;
   border-radius: 8px;
 }
 
 .wl-letter-btn {
-  min-width: 32px;
-  height: 32px;
+  min-width: 28px;
+  height: 28px;
   border: none;
   background: var(--gray-100);
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--gray-600);
   cursor: pointer;
@@ -1039,110 +1080,93 @@ body {
   color: white;
 }
 
-.wl-result-count {
-  font-size: 0.8rem;
-  color: var(--gray-500);
-  margin-bottom: 12px;
-}
-
+/* 单词卡片列表 */
 .wl-list {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  background: var(--gray-100);
-  border-radius: 8px;
-  overflow: hidden;
+  gap: 8px;
 }
 
-.wl-item {
+.wl-card {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   padding: 12px 14px;
   background: white;
-  transition: background 0.15s;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
 }
 
-.wl-item:hover {
-  background: var(--gray-50);
+.wl-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
-.wl-item-main {
+.wl-card-left {
   flex: 1;
   min-width: 0;
 }
 
-.wl-item-word-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.wl-item-word {
-  font-size: 1rem;
-  font-weight: 700;
+.wl-card-word {
+  font-size: 1.5rem;
+  font-weight: 800;
   color: var(--gray-800);
-}
-
-.wl-item-pos {
-  font-size: 0.7rem;
-  color: var(--primary);
-  background: rgba(79, 70, 229, 0.08);
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-weight: 600;
-}
-
-.wl-speak-btn {
-  border: none;
-  background: none;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 2px;
-  opacity: 0.6;
-  transition: opacity 0.15s;
-}
-
-.wl-speak-btn:hover {
-  opacity: 1;
-}
-
-.wl-item-phonetic {
-  font-size: 0.75rem;
-  color: var(--gray-400);
-  margin-bottom: 2px;
-}
-
-.wl-item-meaning {
-  font-size: 0.85rem;
-  color: var(--gray-600);
+  line-height: 1.2;
   margin-bottom: 4px;
 }
 
-.wl-item-example {
+.wl-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.wl-card-pos {
+  font-size: 0.7rem;
+  color: var(--primary);
+  background: rgba(79, 70, 229, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.wl-card-phonetic {
   font-size: 0.8rem;
-  color: var(--gray-500);
+  color: var(--gray-400);
+}
+
+.wl-card-meaning {
+  font-size: 1rem;
+  color: var(--gray-700);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.wl-card-example {
+  font-size: 0.85rem;
+  color: var(--gray-400);
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.wl-item-actions {
+/* 右侧圆形按钮 */
+.wl-card-right {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding-top: 2px;
+  gap: 6px;
+  padding-top: 4px;
 }
 
-.wl-mini-btn {
-  width: 28px;
-  height: 28px;
+.wl-circle-btn {
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--gray-200);
   background: white;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  border-radius: 50%;
+  font-size: 1rem;
   cursor: pointer;
   color: var(--gray-400);
   transition: all 0.15s;
@@ -1151,22 +1175,31 @@ body {
   justify-content: center;
 }
 
-.wl-mini-btn:hover {
+.wl-circle-btn:hover {
   border-color: var(--gray-300);
+  background: var(--gray-50);
 }
 
-.wl-mini-btn.active.green {
-  background: var(--green-light);
-  border-color: var(--green);
-  color: var(--green);
+.wl-circle-btn.speak:hover {
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
-.wl-mini-btn.active.orange {
-  background: var(--orange-light);
-  border-color: var(--orange);
-  color: var(--orange);
+.wl-circle-btn.favorite.active {
+  color: #f59e0b;
+  border-color: #f59e0b;
+  background: #fffbeb;
 }
 
+/* 空状态 */
+.wl-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gray-400);
+  font-size: 0.9rem;
+}
+
+/* 底部操作 */
 .wl-actions-bottom {
   display: flex;
   gap: 12px;
