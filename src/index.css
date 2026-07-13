@@ -1082,20 +1082,33 @@ body {
 
 /* 单词卡片列表 */
 .wl-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .wl-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .wl-card {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 12px;
   background: white;
   border-radius: 10px;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.15s;
+}
+
+@media (max-width: 768px) {
+  .wl-card {
+    gap: 12px;
+    padding: 12px 14px;
+  }
 }
 
 .wl-card:hover {
@@ -1108,11 +1121,17 @@ body {
 }
 
 .wl-card-word {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--gray-800);
   line-height: 1.2;
   margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+  .wl-card-word {
+    font-size: 1.5rem;
+  }
 }
 
 .wl-card-meta {
@@ -1144,12 +1163,18 @@ body {
 }
 
 .wl-card-example {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--gray-400);
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .wl-card-example {
+    font-size: 0.85rem;
+  }
 }
 
 /* 右侧圆形按钮 */
@@ -1161,18 +1186,26 @@ body {
 }
 
 .wl-circle-btn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 1px solid var(--gray-200);
   background: white;
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   color: var(--gray-400);
   transition: all 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .wl-circle-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
 }
 
 .wl-circle-btn:hover {
