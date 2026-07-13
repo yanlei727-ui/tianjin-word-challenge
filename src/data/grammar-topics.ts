@@ -2,11 +2,17 @@ import type { GrammarTopic } from '../types';
 import { grammarNoun } from './grammar-noun';
 import { grammarArticle } from './grammar-article';
 import { grammarPronoun } from './grammar-pronoun';
+import { grammarNumeral } from './grammar-numeral';
+import { grammarPreposition } from './grammar-preposition';
+import { grammarConjunction } from './grammar-conjunction';
 
 export const grammarTopics: GrammarTopic[] = [
   grammarNoun,
   grammarArticle,
   grammarPronoun,
+  grammarNumeral,
+  grammarPreposition,
+  grammarConjunction,
 ];
 
 export function getGrammarTopic(id: string): GrammarTopic | undefined {
