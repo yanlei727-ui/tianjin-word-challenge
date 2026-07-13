@@ -58,7 +58,7 @@ export const grammarVerbUsage: GrammarTopic = {
       content: '动词 + ing 形式，相当于名词使用。',
       items: [
         { label: '作主语', english: 'Swimming is my favorite sport.\nReading is important.', chinese: '' },
-        { label: '作宾语', english: 'I enjoy reading.\nShe finished her homework.', chinese: '某些动词后只能用 doing' },
+        { label: '作宾语', english: 'I enjoy reading.\nShe finished writing the letter.', chinese: '某些动词后只能用 doing' },
         { label: '作介词宾语', english: 'He is good at singing.\nThank you for helping me.', chinese: '介词后用 doing' },
       ],
     },
