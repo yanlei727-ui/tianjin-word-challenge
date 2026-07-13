@@ -950,128 +950,233 @@ body {
   color: var(--primary);
 }
 
-/* Word List Page */
+/* Word List Page - Compact Dictionary Style */
 .wordlist-page {
-  max-width: 1000px;
+  max-width: 800px;
 }
 
-.wordlist-header {
+.wl-top-bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
-  padding: 16px;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  margin-bottom: 16px;
 }
 
-.wordlist-icon {
-  font-size: 2rem;
+.wl-back {
+  font-size: 0.85rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.wordlist-title {
-  font-size: 1.3rem;
+.wl-back:hover {
+  text-decoration: underline;
+}
+
+.wl-module-name {
+  flex: 1;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--gray-800);
-  margin: 0;
-  flex: 1;
 }
 
-.wordlist-count {
-  font-size: 0.9rem;
+.wl-total-count {
+  font-size: 0.85rem;
   color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
-.wordlist-actions-top {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.wordlist-actions-top .btn-primary {
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
-}
-
-/* Full card layout */
-.wordlist-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.wordlist-card-full {
-  background: white;
-  border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow);
-  transition: all 0.2s;
-}
-
-.wordlist-card-full:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.wl-card-header {
+.wl-search-row {
   margin-bottom: 12px;
 }
 
-.wl-card-word-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+.wl-search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.wl-card-word-row .wl-word {
-  font-size: 1.2rem;
+.wl-search-input:focus {
+  border-color: var(--primary);
+}
+
+.wl-letter-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: white;
+  border-radius: 8px;
+}
+
+.wl-letter-btn {
+  min-width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--gray-100);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.wl-letter-btn:hover {
+  background: var(--gray-200);
+}
+
+.wl-letter-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.wl-result-count {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+}
+
+.wl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--gray-100);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  transition: background 0.15s;
+}
+
+.wl-item:hover {
+  background: var(--gray-50);
+}
+
+.wl-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.wl-item-word-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.wl-item-word {
+  font-size: 1rem;
   font-weight: 700;
   color: var(--gray-800);
 }
 
-.wl-pos {
-  font-size: 0.8rem;
+.wl-item-pos {
+  font-size: 0.7rem;
   color: var(--primary);
-  background: rgba(79, 70, 229, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: rgba(79, 70, 229, 0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
   font-weight: 600;
 }
 
-.wl-card-example {
-  background: var(--gray-50);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  margin-bottom: 12px;
-  border-left: 3px solid var(--primary);
-}
-
-.wl-example-en {
-  font-size: 0.9rem;
-  color: var(--gray-700);
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-
-.wl-example-zh {
+.wl-speak-btn {
+  border: none;
+  background: none;
   font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.wl-speak-btn:hover {
+  opacity: 1;
+}
+
+.wl-item-phonetic {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+
+.wl-item-meaning {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  margin-bottom: 4px;
+}
+
+.wl-item-example {
+  font-size: 0.8rem;
   color: var(--gray-500);
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.wl-card-actions {
+.wl-item-actions {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 2px;
 }
 
-.wordlist-toolbar {
+.wl-mini-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--gray-200);
   background: white;
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: var(--shadow);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--gray-400);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wl-mini-btn:hover {
+  border-color: var(--gray-300);
+}
+
+.wl-mini-btn.active.green {
+  background: var(--green-light);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.wl-mini-btn.active.orange {
+  background: var(--orange-light);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.wl-actions-bottom {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.wl-actions-bottom .btn-primary {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
 }
 
 .search-box {
