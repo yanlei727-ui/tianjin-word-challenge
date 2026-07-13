@@ -7,7 +7,6 @@ const navItems = [
   { to: '/chinese-challenge', label: '释义', icon: '🀄' },
   { to: '/favorites', label: '重点词', icon: '⭐' },
   { to: '/wrongbook', label: '错词本', icon: '📋' },
-  { to: '/progress', label: '进度', icon: '📊' },
 ];
 
 export default function Navigation() {

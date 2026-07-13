@@ -5,7 +5,6 @@ import LearnPage from './pages/LearnPage';
 import WordListPage from './pages/WordListPage';
 import ChallengePage from './pages/ChallengePage';
 import WrongBookPage from './pages/WrongBookPage';
-import ProgressPage from './pages/ProgressPage';
 import ChineseChallengePage from './pages/ChineseChallengePage';
 import QuickReviewPage from './pages/QuickReviewPage';
 import ChoiceQuizPage from './pages/ChoiceQuizPage';
@@ -33,7 +32,6 @@ export default function App() {
             <Route path="/choice-quiz" element={<ChoiceQuizPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-quiz" element={<FavoriteQuizPage />} />
-            <Route path="/progress" element={<ProgressPage />} />
           </Routes>
         </main>
         <Navigation />
