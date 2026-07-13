@@ -128,47 +128,90 @@ body {
 /* Home Page */
 .home-hero {
   text-align: center;
-  padding: 48px 24px 40px;
-  background: linear-gradient(145deg, #6366f1, #8b5cf6, #a78bfa);
-  border-radius: var(--radius);
+  padding: 64px 24px 56px;
+  min-height: 220px;
+  background: linear-gradient(160deg, #7c3aed 0%, #8b5cf6 40%, #a78bfa 100%);
+  border-radius: 16px;
   color: white;
   margin-bottom: 32px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.25);
 }
 
-.home-hero::before {
-  content: '';
+.hero-glow {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 55%);
   pointer-events: none;
 }
 
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-orb-1 {
+  width: 180px;
+  height: 180px;
+  top: -40px;
+  right: -40px;
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.hero-orb-2 {
+  width: 140px;
+  height: 140px;
+  bottom: -30px;
+  left: -30px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.02); }
+}
+
 .home-brand {
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin-bottom: 12px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  position: relative;
+  z-index: 1;
 }
 
 .home-english {
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.15em;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.85;
-  margin-bottom: 16px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .home-tagline {
   font-size: 0.85rem;
-  opacity: 0.75;
-  letter-spacing: 0.05em;
+  font-weight: 400;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
 }
 
 .stats-grid {

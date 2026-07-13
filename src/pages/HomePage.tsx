@@ -11,9 +11,12 @@ export default function HomePage() {
   return (
     <div className="page home-page">
       <div className="home-hero">
+        <div className="hero-glow"></div>
+        <div className="hero-orb hero-orb-1"></div>
+        <div className="hero-orb hero-orb-2"></div>
         <h1 className="home-brand">淳淳英语</h1>
-        <p className="home-english">English Learning Space</p>
-        <p className="home-tagline">中考英语专项训练 · 持续成长记录</p>
+        <p className="home-english">ENGLISH LEARNING SPACE</p>
+        <p className="home-tagline">每天进步一点点，成为更好的自己</p>
       </div>
 
       {/* 单词本浏览 */}
