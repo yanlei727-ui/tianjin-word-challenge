@@ -9,6 +9,7 @@ import {
   saveChineseChallengeResult,
   loadChineseChallengeResults,
   resetChineseChallenge,
+  GROUP_SIZE,
   type ChineseChallengeResult,
 } from '../utils/storage';
 import {
@@ -18,34 +19,48 @@ import {
   type ModuleKey,
 } from '../utils/modules';
 
-type Phase = 'select' | 'input' | 'reveal' | 'complete';
+type Phase = 'select' | 'group-select' | 'input' | 'reveal' | 'complete';
+
+function getGroupCount(totalWords: number): number {
+  return Math.ceil(totalWords / GROUP_SIZE);
+}
+
+function getGroupRange(groupIndex: number, totalWords: number): { start: number; end: number; count: number } {
+  const start = groupIndex * GROUP_SIZE;
+  const end = Math.min(start + GROUP_SIZE, totalWords);
+  return { start, end, count: end - start };
+}
 
 export default function ChineseChallengePage() {
   const [searchParams] = useSearchParams();
   const initialModule = (searchParams.get('module') as ModuleKey) || '';
 
   const [selectedModule, setSelectedModule] = useState<ModuleKey | ''>(initialModule);
+  const [selectedGroup, setSelectedGroup] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');
-  const [phase, setPhase] = useState<Phase>(initialModule ? 'input' : 'select');
+  const [phase, setPhase] = useState<Phase>(initialModule ? 'group-select' : 'select');
   const [results, setResults] = useState<ChineseChallengeResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const allWords = selectedModule ? getModuleWords(selectedModule) : [];
   const moduleInfo = selectedModule ? getModuleInfo(selectedModule) : null;
   const totalWords = allWords.length;
-  const currentWord = allWords[currentIndex];
-  const finished = currentIndex >= totalWords;
+  const groupCount = getGroupCount(totalWords);
+  const { start: groupStart, end: groupEnd, count: groupCountWords } = getGroupRange(selectedGroup, totalWords);
+  const groupWords = allWords.slice(groupStart, groupEnd);
+  const currentWord = groupWords[currentIndex];
+  const finished = currentIndex >= groupCountWords;
 
-  // Load existing position and results when module is selected
+  // Load existing position and results when group is selected
   useEffect(() => {
-    if (selectedModule) {
-      const savedPos = loadChineseChallengePosition(selectedModule);
-      const savedResults = loadChineseChallengeResults(selectedModule);
+    if (selectedModule && phase === 'input') {
+      const savedPos = loadChineseChallengePosition(selectedModule, selectedGroup);
+      const savedResults = loadChineseChallengeResults(selectedModule, selectedGroup);
       setCurrentIndex(savedPos);
       setResults(savedResults);
     }
-  }, [selectedModule]);
+  }, [selectedModule, selectedGroup, phase]);
 
   // Focus input when phase changes to input
   useEffect(() => {
@@ -56,16 +71,41 @@ export default function ChineseChallengePage() {
 
   const handleSelectModule = useCallback((module: ModuleKey) => {
     setSelectedModule(module);
-    setPhase('input');
+    setPhase('group-select');
   }, []);
 
-  const handleRestart = useCallback(() => {
-    if (!selectedModule) return;
-    resetChineseChallenge(selectedModule);
+  const handleSelectGroup = useCallback((groupIndex: number) => {
+    setSelectedGroup(groupIndex);
     setCurrentIndex(0);
     setResults([]);
     setPhase('input');
-  }, [selectedModule]);
+  }, []);
+
+  const handleContinueLastGroup = useCallback(() => {
+    if (!selectedModule) return;
+    // Find the first incomplete group
+    for (let i = 0; i < groupCount; i++) {
+      const pos = loadChineseChallengePosition(selectedModule, i);
+      const { count } = getGroupRange(i, totalWords);
+      if (pos < count) {
+        setSelectedGroup(i);
+        setCurrentIndex(0);
+        setResults([]);
+        setPhase('input');
+        return;
+      }
+    }
+    // All groups complete, start from group 0
+    handleSelectGroup(0);
+  }, [selectedModule, groupCount, totalWords, handleSelectGroup]);
+
+  const handleRestartGroup = useCallback(() => {
+    if (!selectedModule) return;
+    resetChineseChallenge(selectedModule, selectedGroup);
+    setCurrentIndex(0);
+    setResults([]);
+    setPhase('input');
+  }, [selectedModule, selectedGroup]);
 
   const handleSubmit = useCallback(() => {
     if (!currentWord || phase !== 'input') return;
@@ -85,7 +125,7 @@ export default function ChineseChallengePage() {
       setResults(newResults);
 
       // Save result
-      saveChineseChallengeResult(selectedModule, result);
+      saveChineseChallengeResult(selectedModule, selectedGroup, result);
 
       // If unfamiliar, add to wrong book
       if (status === 'unfamiliar') {
@@ -99,22 +139,31 @@ export default function ChineseChallengePage() {
       setPhase('input');
 
       // Save position
-      saveChineseChallengePosition(selectedModule, nextIndex);
+      saveChineseChallengePosition(selectedModule, selectedGroup, nextIndex);
 
       // Check if finished
-      if (nextIndex >= totalWords) {
+      if (nextIndex >= groupCountWords) {
         setPhase('complete');
       }
     },
-    [currentWord, selectedModule, results, currentIndex, totalWords]
+    [currentWord, selectedModule, selectedGroup, results, currentIndex, groupCountWords]
   );
 
-  const handleBackToSelect = useCallback(() => {
+  const handleBackToModuleSelect = useCallback(() => {
     setSelectedModule('');
+    setSelectedGroup(0);
     setCurrentIndex(0);
     setInput('');
     setResults([]);
     setPhase('select');
+  }, []);
+
+  const handleBackToGroupSelect = useCallback(() => {
+    setSelectedGroup(0);
+    setCurrentIndex(0);
+    setInput('');
+    setResults([]);
+    setPhase('group-select');
   }, []);
 
   // Keyboard shortcuts
@@ -136,16 +185,26 @@ export default function ChineseChallengePage() {
       <div className="page">
         <div className="module-select-header">
           <h2>📖 分类释义训练</h2>
-          <p>选择词库开始训练，支持断点续练</p>
+          <p>选择词库开始训练，支持分组学习</p>
         </div>
 
         <div className="module-select-list">
           {MODULES.map((m) => {
             const words = getModuleWords(m.key);
             const moduleProgress = loadProgress(m.key);
-            const savedPos = loadChineseChallengePosition(m.key);
             const learnedCount = moduleProgress?.learned?.length || 0;
-            const hasProgress = savedPos > 0;
+            const groups = getGroupCount(words.length);
+
+            // Check if there's any incomplete group
+            let hasIncompleteGroup = false;
+            for (let i = 0; i < groups; i++) {
+              const pos = loadChineseChallengePosition(m.key, i);
+              const { count } = getGroupRange(i, words.length);
+              if (pos < count) {
+                hasIncompleteGroup = true;
+                break;
+              }
+            }
 
             return (
               <div
@@ -158,12 +217,13 @@ export default function ChineseChallengePage() {
                   <div className="module-select-title">{m.label}</div>
                   <div className="module-select-stats">
                     <span>共 {words.length} 词</span>
+                    <span>{groups} 组</span>
                     <span>已学 {learnedCount} 词</span>
                   </div>
-                  {hasProgress && (
+                  {hasIncompleteGroup && (
                     <div className="module-select-progress">
                       <span className="progress-hint">
-                        📌 上次训练到第 {savedPos} 词
+                        📌 有未完成的训练
                       </span>
                     </div>
                   )}
@@ -177,12 +237,95 @@ export default function ChineseChallengePage() {
     );
   }
 
+  // Group Selection Screen
+  if (phase === 'group-select' && selectedModule) {
+    // Find first incomplete group for continue button
+    let firstIncompleteGroup = -1;
+    for (let i = 0; i < groupCount; i++) {
+      const pos = loadChineseChallengePosition(selectedModule, i);
+      const { count } = getGroupRange(i, totalWords);
+      if (pos < count) {
+        firstIncompleteGroup = i;
+        break;
+      }
+    }
+
+    return (
+      <div className="page">
+        <div className="chinese-challenge-header">
+          <button className="btn-back" onClick={handleBackToModuleSelect}>
+            ← 返回
+          </button>
+          <div className="chinese-challenge-title">
+            {moduleInfo?.icon} {moduleInfo?.label}
+          </div>
+          <div className="chinese-challenge-progress-text">
+            共 {totalWords} 词
+          </div>
+        </div>
+
+        {firstIncompleteGroup >= 0 && (
+          <button
+            className="btn-action btn-primary btn-large btn-continue"
+            onClick={handleContinueLastGroup}
+          >
+            ▶ 继续学习（第 {firstIncompleteGroup + 1} 组）
+          </button>
+        )}
+
+        <div className="group-select-list">
+          {Array.from({ length: groupCount }, (_, i) => {
+            const { start, end, count } = getGroupRange(i, totalWords);
+            const pos = loadChineseChallengePosition(selectedModule, i);
+            const completed = pos >= count;
+            const progressPercent = Math.round((pos / count) * 100);
+
+            return (
+              <div
+                key={i}
+                className={`group-select-card ${completed ? 'completed' : ''}`}
+                onClick={() => handleSelectGroup(i)}
+              >
+                <div className="group-card-header">
+                  <div className="group-card-title">第 {i + 1} 组</div>
+                  <div className="group-card-range">
+                    {start + 1}-{end}（{count} 词）
+                  </div>
+                </div>
+                <div className="group-card-progress">
+                  <div className="group-progress-bar">
+                    <div
+                      className="group-progress-fill"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                  <div className="group-progress-text">
+                    {completed ? (
+                      <span className="group-completed">✅ 已完成</span>
+                    ) : pos > 0 ? (
+                      <span>{pos}/{count}（{progressPercent}%）</span>
+                    ) : (
+                      <span>未开始</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   // Complete Screen
   if (phase === 'complete' || finished) {
     const masteredCount = results.filter((r) => r.status === 'mastered').length;
     const familiarCount = results.filter((r) => r.status === 'familiar').length;
     const unfamiliarCount = results.filter((r) => r.status === 'unfamiliar').length;
-    const accuracy = totalWords > 0 ? Math.round((masteredCount / totalWords) * 100) : 0;
+    const accuracy = groupCountWords > 0 ? Math.round((masteredCount / groupCountWords) * 100) : 0;
+
+    // Check if there's a next group
+    const hasNextGroup = selectedGroup < groupCount - 1;
 
     return (
       <div className="page">
@@ -190,10 +333,10 @@ export default function ChineseChallengePage() {
           <div className="result-celebration">
             {accuracy >= 80 ? '🎉' : accuracy >= 60 ? '💪' : '📚'}
           </div>
-          <h2>{moduleInfo?.icon} {moduleInfo?.label} 训练完成！</h2>
+          <h2>{moduleInfo?.icon} 第 {selectedGroup + 1} 组训练完成！</h2>
           <div className="result-score">{accuracy}%</div>
           <div className="result-details">
-            <span>共训练：{totalWords} 词</span>
+            <span>共训练：{groupCountWords} 词</span>
             <span>掌握：{masteredCount} 词</span>
             <span>熟悉：{familiarCount} 词</span>
             <span>陌生：{unfamiliarCount} 词</span>
@@ -206,11 +349,19 @@ export default function ChineseChallengePage() {
           )}
 
           <div className="result-actions">
-            <button className="btn-action btn-primary btn-large" onClick={handleRestart}>
-              🔄 重新训练
+            {hasNextGroup && (
+              <button
+                className="btn-action btn-primary btn-large"
+                onClick={() => handleSelectGroup(selectedGroup + 1)}
+              >
+                ▶ 继续第 {selectedGroup + 2} 组
+              </button>
+            )}
+            <button className="btn-action btn-primary btn-large" onClick={handleRestartGroup}>
+              🔄 重练本组
             </button>
-            <button className="btn-action btn-secondary btn-large" onClick={handleBackToSelect}>
-              ← 返回选择
+            <button className="btn-action btn-secondary btn-large" onClick={handleBackToGroupSelect}>
+              ← 返回分组
             </button>
           </div>
         </div>
@@ -228,14 +379,14 @@ export default function ChineseChallengePage() {
   return (
     <div className="page">
       <div className="chinese-challenge-header">
-        <button className="btn-back" onClick={handleBackToSelect}>
+        <button className="btn-back" onClick={handleBackToGroupSelect}>
           ← 返回
         </button>
         <div className="chinese-challenge-title">
-          {moduleInfo?.icon} {moduleInfo?.label}
+          {moduleInfo?.icon} 第 {selectedGroup + 1} 组
         </div>
         <div className="chinese-challenge-progress-text">
-          {currentIndex + 1} / {totalWords}
+          {currentIndex + 1} / {groupCountWords}
         </div>
       </div>
 
@@ -243,7 +394,7 @@ export default function ChineseChallengePage() {
         <div className="progress-bar">
           <div
             className="progress-bar-fill"
-            style={{ width: `${((currentIndex + 1) / totalWords) * 100}%` }}
+            style={{ width: `${((currentIndex + 1) / groupCountWords) * 100}%` }}
           />
         </div>
       </div>

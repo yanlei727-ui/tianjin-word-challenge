@@ -1885,6 +1885,93 @@ body {
   color: var(--gray-400);
 }
 
+/* Continue Button */
+.btn-continue {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+/* Group Selection */
+.group-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.group-select-card {
+  padding: 16px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.group-select-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.group-select-card.completed {
+  background: var(--green-light);
+  border-color: var(--green);
+}
+
+.group-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.group-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.group-card-range {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.group-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.group-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.group-select-card.completed .group-progress-fill {
+  background: var(--green);
+}
+
+.group-progress-text {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  min-width: 80px;
+  text-align: right;
+}
+
+.group-completed {
+  color: var(--green);
+  font-weight: 600;
+}
+
 /* Chinese Challenge - Training Header */
 .chinese-challenge-header {
   display: flex;

@@ -302,60 +302,66 @@ export function getFavoritesByModule(module?: ModuleKey): FavoriteRecord[] {
   return favorites;
 }
 
-// Chinese Challenge (分类释义训练) position per module
+// Chinese Challenge (分类释义训练) - Group-based position and results
+// Key format: {module}:{groupIndex} (e.g., "noun:0" for noun group 0)
 const CHALLENGE_POSITION_KEY = 'tianjin-word-challenge-chinese-pos';
-
-export function loadChineseChallengePosition(module: ModuleKey): number {
-  try {
-    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
-    if (!raw) return 0;
-    const data = JSON.parse(raw);
-    return data[module] || 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function saveChineseChallengePosition(module: ModuleKey, position: number): void {
-  try {
-    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
-    const data = raw ? JSON.parse(raw) : {};
-    data[module] = position;
-    localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(data));
-  } catch {
-    // ignore
-  }
-}
-
-// Chinese Challenge results per module
 const CHALLENGE_RESULTS_KEY = 'tianjin-word-challenge-chinese-results';
+
+export const GROUP_SIZE = 20;
 
 export interface ChineseChallengeResult {
   wordId: number;
   status: 'mastered' | 'familiar' | 'unfamiliar';
 }
 
-export function loadChineseChallengeResults(module: ModuleKey): ChineseChallengeResult[] {
+function getPositionKey(module: ModuleKey, groupIndex: number): string {
+  return `${module}:${groupIndex}`;
+}
+
+export function loadChineseChallengePosition(module: ModuleKey, groupIndex: number): number {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+    if (!raw) return 0;
+    const data = JSON.parse(raw);
+    return data[getPositionKey(module, groupIndex)] || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function saveChineseChallengePosition(module: ModuleKey, groupIndex: number, position: number): void {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+    const data = raw ? JSON.parse(raw) : {};
+    data[getPositionKey(module, groupIndex)] = position;
+    localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(data));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadChineseChallengeResults(module: ModuleKey, groupIndex: number): ChineseChallengeResult[] {
   try {
     const raw = localStorage.getItem(CHALLENGE_RESULTS_KEY);
     if (!raw) return [];
     const data = JSON.parse(raw);
-    return data[module] || [];
+    return data[getPositionKey(module, groupIndex)] || [];
   } catch {
     return [];
   }
 }
 
-export function saveChineseChallengeResult(module: ModuleKey, result: ChineseChallengeResult): void {
+export function saveChineseChallengeResult(module: ModuleKey, groupIndex: number, result: ChineseChallengeResult): void {
   try {
     const raw = localStorage.getItem(CHALLENGE_RESULTS_KEY);
     const data = raw ? JSON.parse(raw) : {};
-    if (!data[module]) data[module] = [];
-    const existing = data[module].findIndex((r: ChineseChallengeResult) => r.wordId === result.wordId);
+    const key = getPositionKey(module, groupIndex);
+    if (!data[key]) data[key] = [];
+    const existing = data[key].findIndex((r: ChineseChallengeResult) => r.wordId === result.wordId);
     if (existing >= 0) {
-      data[module][existing] = result;
+      data[key][existing] = result;
     } else {
-      data[module].push(result);
+      data[key].push(result);
     }
     localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(data));
   } catch {
@@ -363,25 +369,34 @@ export function saveChineseChallengeResult(module: ModuleKey, result: ChineseCha
   }
 }
 
-export function resetChineseChallenge(module?: ModuleKey): void {
+export function resetChineseChallenge(module?: ModuleKey, groupIndex?: number): void {
   try {
-    if (module) {
-      const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
-      if (raw) {
-        const data = JSON.parse(raw);
-        delete data[module];
-        localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(data));
-      }
-      const raw2 = localStorage.getItem(CHALLENGE_RESULTS_KEY);
-      if (raw2) {
-        const data2 = JSON.parse(raw2);
-        delete data2[module];
-        localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(data2));
-      }
+    const posRaw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+    const resultsRaw = localStorage.getItem(CHALLENGE_RESULTS_KEY);
+    const posData = posRaw ? JSON.parse(posRaw) : {};
+    const resultsData = resultsRaw ? JSON.parse(resultsRaw) : {};
+
+    if (module && groupIndex !== undefined) {
+      // Reset specific group
+      delete posData[getPositionKey(module, groupIndex)];
+      delete resultsData[getPositionKey(module, groupIndex)];
+    } else if (module) {
+      // Reset all groups in module
+      Object.keys(posData).forEach((key) => {
+        if (key.startsWith(`${module}:`)) delete posData[key];
+      });
+      Object.keys(resultsData).forEach((key) => {
+        if (key.startsWith(`${module}:`)) delete resultsData[key];
+      });
     } else {
+      // Reset everything
       localStorage.removeItem(CHALLENGE_POSITION_KEY);
       localStorage.removeItem(CHALLENGE_RESULTS_KEY);
+      return;
     }
+
+    localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(posData));
+    localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(resultsData));
   } catch {
     // ignore
   }
