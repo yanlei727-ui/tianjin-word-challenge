@@ -8,6 +8,9 @@ import { grammarConjunction } from './grammar-conjunction';
 import { grammarAdjAdv } from './grammar-adj-adv';
 import { grammarVerbUsage } from './grammar-verb-usage';
 import { grammarModal } from './grammar-modal';
+import { grammarSimpleTenses } from './grammar-simple-tenses';
+import { grammarProgressiveTenses } from './grammar-progressive-tenses';
+import { grammarPresentPerfect } from './grammar-present-perfect';
 
 export const grammarTopics: GrammarTopic[] = [
   grammarNoun,
@@ -19,6 +22,9 @@ export const grammarTopics: GrammarTopic[] = [
   grammarAdjAdv,
   grammarVerbUsage,
   grammarModal,
+  grammarSimpleTenses,
+  grammarProgressiveTenses,
+  grammarPresentPerfect,
 ];
 
 export function getGrammarTopic(id: string): GrammarTopic | undefined {
