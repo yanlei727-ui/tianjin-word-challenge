@@ -1,20 +1,61 @@
 let englishVoice: SpeechSynthesisVoice | null = null;
 
+// 高质量语音优先列表
+const PREFERRED_VOICES = [
+  'Samantha',    // macOS - 高质量女声
+  'Alex',        // macOS - 高质量男声
+  'Karen',       // macOS - 澳洲英语
+  'Daniel',      // macOS - 英式男声
+  'Moira',       // macOS - 爱尔兰英语
+  'Tessa',       // macOS - 南非英语
+  'Google UK English Female',
+  'Google UK English Male',
+  'Google US English',
+  'Microsoft Zira',  // Windows
+  'Microsoft David', // Windows
+];
+
 function getEnglishVoice(): SpeechSynthesisVoice | null {
   if (englishVoice) return englishVoice;
 
   const voices = window.speechSynthesis?.getVoices() || [];
+  if (voices.length === 0) return null;
 
-  // 按优先级选择英文语音
-  englishVoice =
-    voices.find((v) => v.lang === 'en-US' && v.name.includes('Female')) ||
-    voices.find((v) => v.lang === 'en-US') ||
-    voices.find((v) => v.lang === 'en-GB') ||
-    voices.find((v) => v.lang.startsWith('en')) ||
-    voices[0] ||
-    null;
+  // 1. 尝试找到首选的高质量语音
+  for (const preferred of PREFERRED_VOICES) {
+    const found = voices.find(
+      (v) => v.name.includes(preferred) && v.lang.startsWith('en')
+    );
+    if (found) {
+      englishVoice = found;
+      return englishVoice;
+    }
+  }
 
-  return englishVoice;
+  // 2. 选择 en-US 女声
+  const usFemale = voices.find(
+    (v) => v.lang === 'en-US' && v.name.toLowerCase().includes('female')
+  );
+  if (usFemale) {
+    englishVoice = usFemale;
+    return englishVoice;
+  }
+
+  // 3. 选择 en-US 语音
+  const usVoice = voices.find((v) => v.lang === 'en-US');
+  if (usVoice) {
+    englishVoice = usVoice;
+    return englishVoice;
+  }
+
+  // 4. 选择任何英文语音
+  const anyEn = voices.find((v) => v.lang.startsWith('en'));
+  if (anyEn) {
+    englishVoice = anyEn;
+    return englishVoice;
+  }
+
+  return null;
 }
 
 export function speak(text: string, rate = 0.85): void {
@@ -23,13 +64,11 @@ export function speak(text: string, rate = 0.85): void {
     return;
   }
 
-  // 取消之前的朗读
   window.speechSynthesis.cancel();
 
   const utter = new SpeechSynthesisUtterance(text);
-
-  // 尝试设置英文语音
   const voice = getEnglishVoice();
+
   if (voice) {
     utter.voice = voice;
     utter.lang = voice.lang;
@@ -41,7 +80,6 @@ export function speak(text: string, rate = 0.85): void {
   utter.pitch = 1;
   utter.volume = 1;
 
-  // 错误处理
   utter.onerror = (event) => {
     console.error('语音朗读错误:', event.error);
   };
@@ -50,7 +88,7 @@ export function speak(text: string, rate = 0.85): void {
 }
 
 export function speakWord(word: string): void {
-  speak(word, 0.8);
+  speak(word, 0.75);
 }
 
 export function speakSentence(sentence: string): void {
@@ -63,12 +101,9 @@ export function stopSpeaking(): void {
 
 // 预加载语音列表
 if (typeof window !== 'undefined' && window.speechSynthesis) {
-  // 立即尝试获取语音
   window.speechSynthesis.getVoices();
-
-  // 监听语音加载完成
   window.speechSynthesis.onvoiceschanged = () => {
     window.speechSynthesis.getVoices();
-    englishVoice = null; // 重新选择语音
+    englishVoice = null;
   };
 }
