@@ -12,11 +12,6 @@ const SAMPLE_WORDS: Record<string, string[]> = {
 export default function VocabularyCenter() {
   return (
     <div className="page vocabulary-center">
-      <div className="vc-header">
-        <h1 className="vc-title">词汇中心</h1>
-        <p className="vc-subtitle" style={{ color: 'var(--gray-600)' }}>中考核心词汇学习与训练</p>
-      </div>
-
       {/* Word Lists */}
       <section className="vc-section">
         <h2 className="section-title">单词本</h2>

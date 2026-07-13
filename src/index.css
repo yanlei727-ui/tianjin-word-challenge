@@ -3557,9 +3557,7 @@ body {
    NEW: Vocabulary Center
    ============================================================ */
 .vc-header {
-  text-align: center;
-  margin-bottom: 16px;
-  padding-top: 32px;
+  display: none;
 }
 
 .vc-title {
