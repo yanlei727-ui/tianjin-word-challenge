@@ -48,7 +48,7 @@ export default function HomePage() {
   return (
     <div className="page home-page">
       <div className="home-hero">
-        <h1 className="home-title">天津中考英语闯关</h1>
+        <h1 className="home-title">天津中考英语词汇闯关</h1>
         <p className="home-subtitle">中考高频词汇 · 分类专项训练</p>
       </div>
 

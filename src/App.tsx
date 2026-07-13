@@ -16,7 +16,8 @@ export default function App() {
     <BrowserRouter>
       <div className="app">
         <header className="app-header">
-          <h1 className="app-title">📝 天津中考名词闯关</h1>
+          <h1 className="app-title">📝 天津中考英语词汇闯关</h1>
+          <p className="app-subtitle">中考高频词汇 · 分类专项训练</p>
         </header>
         <main className="app-main">
           <Routes>

@@ -57,6 +57,13 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.app-subtitle {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  margin-top: 0;
 }
 
 .app-main {
@@ -1952,6 +1959,10 @@ body {
 
   .app-title {
     font-size: 1.2rem;
+  }
+
+  .app-subtitle {
+    font-size: 0.75rem;
   }
 
   .home-title {
