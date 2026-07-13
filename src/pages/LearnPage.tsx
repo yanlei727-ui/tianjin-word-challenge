@@ -6,6 +6,9 @@ import {
   markUnfamiliar,
   addWrongRecord,
   saveLastPosition,
+  addFavorite,
+  removeFavorite,
+  isFavorited,
 } from '../utils/storage';
 import { speakWord, stopSpeaking } from '../utils/speech';
 import { getModuleWords, type ModuleKey } from '../utils/modules';
@@ -135,6 +138,15 @@ export default function LearnPage() {
     setProgress(p);
   };
 
+  const handleToggleFavorite = () => {
+    if (!currentWord) return;
+    if (isFavorited(currentWord.id, module)) {
+      removeFavorite(currentWord.id, module);
+    } else {
+      addFavorite(currentWord.id, module);
+    }
+  };
+
   const handleNext = () => {
     stopSpeaking();
     if (currentIndex < wordList.length - 1) {
@@ -212,10 +224,12 @@ export default function LearnPage() {
           word={currentWord}
           showMeaning={showMeaning}
           showExample={showExample}
+          isFavorited={isFavorited(currentWord.id, module)}
           onKnow={handleKnow}
           onUnfamiliar={handleUnfamiliar}
           onAddWrong={handleAddWrong}
           onNext={handleNext}
+          onToggleFavorite={handleToggleFavorite}
         />
       )}
 

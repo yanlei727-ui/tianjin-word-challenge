@@ -5,7 +5,9 @@ import {
   markLearned,
   markUnfamiliar,
   addWrongRecord,
-  removeFromWrongBook,
+  addFavorite,
+  removeFavorite,
+  isFavorited,
 } from '../utils/storage';
 import { speakWord, stopSpeaking } from '../utils/speech';
 import { getModuleWords, type ModuleKey } from '../utils/modules';
@@ -33,7 +35,6 @@ export default function QuickReviewPage() {
   const [roundWords, setRoundWords] = useState<typeof allWords>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('reveal');
-  const [isCorrect, setIsCorrect] = useState(false);
   const [results, setResults] = useState<{ wordId: number; status: 'know' | 'familiar' | 'wrong' }[]>([]);
   const [finished, setFinished] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -67,6 +68,15 @@ export default function QuickReviewPage() {
     setPhase('graded');
     if (currentWord) speakWord(currentWord.word);
   }, [phase, currentWord]);
+
+  const handleToggleFavorite = useCallback(() => {
+    if (!currentWord) return;
+    if (isFavorited(currentWord.id, module)) {
+      removeFavorite(currentWord.id, module);
+    } else {
+      addFavorite(currentWord.id, module);
+    }
+  }, [currentWord, module]);
 
   const handleGrade = useCallback((status: 'know' | 'familiar' | 'wrong') => {
     if (!currentWord) return;
@@ -223,6 +233,18 @@ export default function QuickReviewPage() {
         <div className="qr-card-inner">
           {/* Front: English word */}
           <div className="qr-card-front">
+            {currentWord && (
+              <button
+                className={`btn-favorite ${isFavorited(currentWord.id, module) ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite();
+                }}
+                title={isFavorited(currentWord.id, module) ? '取消收藏' : '收藏重点词'}
+              >
+                {isFavorited(currentWord.id, module) ? '⭐' : '☆'}
+              </button>
+            )}
             <div className="qr-word">{currentWord?.word}</div>
             <div className="qr-phonetic">{currentWord?.phonetic}</div>
             <div className="qr-pos">{currentWord?.partOfSpeech}</div>

@@ -18,32 +18,47 @@ interface WordCardProps {
   word: WordData;
   showMeaning?: boolean;
   showExample?: boolean;
+  isFavorited?: boolean;
   onKnow?: () => void;
   onUnfamiliar?: () => void;
   onAddWrong?: () => void;
   onNext?: () => void;
+  onToggleFavorite?: () => void;
 }
 
 export default function WordCard({
   word,
   showMeaning = true,
   showExample = true,
+  isFavorited = false,
   onKnow,
   onUnfamiliar,
   onAddWrong,
   onNext,
+  onToggleFavorite,
 }: WordCardProps) {
   return (
     <div className="word-card">
       <div className="word-card-header">
         <h2 className="word-english">{word.word}</h2>
-        <button
-          className="btn-speak"
-          onClick={() => speakWord(word.word)}
-          title="朗读单词"
-        >
-          🔊
-        </button>
+        <div className="word-card-actions-right">
+          {onToggleFavorite && (
+            <button
+              className={`btn-favorite ${isFavorited ? 'active' : ''}`}
+              onClick={onToggleFavorite}
+              title={isFavorited ? '取消收藏' : '收藏重点词'}
+            >
+              {isFavorited ? '⭐' : '☆'}
+            </button>
+          )}
+          <button
+            className="btn-speak"
+            onClick={() => speakWord(word.word)}
+            title="朗读单词"
+          >
+            🔊
+          </button>
+        </div>
       </div>
       <div className="word-phonetic">{word.phonetic}</div>
       <div className="word-pos">{word.partOfSpeech}</div>

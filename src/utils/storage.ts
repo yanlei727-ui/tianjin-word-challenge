@@ -238,3 +238,66 @@ export function saveChallengeRecord(record: ChallengeRecord): void {
     // storage full or unavailable
   }
 }
+
+// Favorites (重点词)
+export interface FavoriteRecord {
+  wordId: number;
+  module: ModuleKey;
+  addedAt: string;
+}
+
+const FAVORITES_KEY = 'tianjin-word-challenge-favorites';
+
+export function loadFavorites(): FavoriteRecord[] {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveFavorites(favorites: FavoriteRecord[]): void {
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  } catch {
+    // storage full or unavailable
+  }
+}
+
+export function addFavorite(wordId: number, module: ModuleKey): FavoriteRecord[] {
+  const favorites = loadFavorites();
+  const exists = favorites.some((f) => f.wordId === wordId && f.module === module);
+  if (!exists) {
+    favorites.push({
+      wordId,
+      module,
+      addedAt: new Date().toISOString(),
+    });
+    saveFavorites(favorites);
+  }
+  return favorites;
+}
+
+export function removeFavorite(wordId: number, module: ModuleKey): FavoriteRecord[] {
+  const favorites = loadFavorites();
+  const filtered = favorites.filter(
+    (f) => !(f.wordId === wordId && f.module === module)
+  );
+  saveFavorites(filtered);
+  return filtered;
+}
+
+export function isFavorited(wordId: number, module: ModuleKey): boolean {
+  const favorites = loadFavorites();
+  return favorites.some((f) => f.wordId === wordId && f.module === module);
+}
+
+export function getFavoritesByModule(module?: ModuleKey): FavoriteRecord[] {
+  const favorites = loadFavorites();
+  if (module) {
+    return favorites.filter((f) => f.module === module);
+  }
+  return favorites;
+}

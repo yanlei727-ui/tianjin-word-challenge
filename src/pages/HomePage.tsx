@@ -25,7 +25,6 @@ export default function HomePage() {
 
   const handleModuleChange = (key: ModuleKey) => {
     setSelectedModule(key);
-    const words = getModuleWords(key);
     const p = loadProgress(key);
     setStartInput(String(p.lastPosition > 0 ? p.lastPosition + 1 : 1));
   };
