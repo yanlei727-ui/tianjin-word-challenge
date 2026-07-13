@@ -1,84 +1,125 @@
-import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { MODULES, getModuleWords, type ModuleKey } from '../utils/modules';
+import { Link } from 'react-router-dom';
+import { MODULES, getModuleWords } from '../utils/modules';
+import { loadProgress } from '../utils/storage';
+
+const SYSTEM_MODULES = [
+  { key: 'vocabulary', label: '词汇中心', icon: '📖', color: 'var(--primary)', desc: '单词学习与训练', route: '/vocabulary' },
+  { key: 'grammar', label: '语法专项', icon: '📐', color: '#3b82f6', desc: '语法知识梳理', route: '/grammar' },
+  { key: 'reading', label: '阅读理解', icon: '📰', color: '#10b981', desc: '阅读理解训练', route: '/reading' },
+  { key: 'cloze', label: '完形填空', icon: '📝', color: '#f59e0b', desc: '完形填空练习', route: '/cloze' },
+  { key: 'writing', label: '作文训练', icon: '✍️', color: '#8b5cf6', desc: '写作能力提升', route: '/writing' },
+  { key: 'mistakes', label: '错题本', icon: '📕', color: 'var(--red)', desc: '错题回顾巩固', route: '/mistakes' },
+  { key: 'plan', label: '学习计划', icon: '📋', color: '#06b6d4', desc: '规划学习进度', route: '/plan' },
+];
+
+function getVocabStats() {
+  let totalWords = 0;
+  let totalLearned = 0;
+  for (const m of MODULES) {
+    const words = getModuleWords(m.key);
+    totalWords += words.length;
+    const progress = loadProgress(m.key);
+    totalLearned += progress.learned.length;
+  }
+  return { totalWords, totalLearned };
+}
 
 export default function HomePage() {
-  const [searchParams] = useSearchParams();
-  const [selectedModule] = useState<ModuleKey>(
-    (searchParams.get('module') as ModuleKey) || 'noun'
-  );
+  const { totalWords, totalLearned } = getVocabStats();
+  const progressPercent = totalWords > 0 ? Math.round((totalLearned / totalWords) * 100) : 0;
 
   return (
     <div className="page home-page">
-      <div className="home-hero">
-        <div className="hero-glow"></div>
-        <div className="hero-orb hero-orb-1"></div>
-        <div className="hero-orb hero-orb-2"></div>
+      {/* Compact Brand */}
+      <div className="home-hero-compact">
         <h1 className="home-brand">淳淳英语</h1>
-        <p className="home-english">ENGLISH LEARNING SPACE</p>
-        <p className="home-tagline">每天进步一点点，成为更好的自己</p>
+        <p className="home-english">TIANJIN ENGLISH LEARNING SYSTEM</p>
+        <p className="home-tagline">面向天津中考的英语学习系统</p>
       </div>
 
-      {/* 单词本浏览 */}
-      <section className="home-section">
-        <h2 className="section-title">📚 单词本</h2>
-        <div className="module-selector">
+      {/* Today's Learning Card */}
+      <div className="home-today-card">
+        <div className="today-left">
+          <div className="today-label">今日学习</div>
+          <div className="today-stat">{totalLearned} / {totalWords} 词</div>
+        </div>
+        <div className="today-right">
+          <div className="today-progress-ring">
+            <svg viewBox="0 0 36 36">
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="var(--gray-200)"
+                strokeWidth="3"
+              />
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="var(--primary)"
+                strokeWidth="3"
+                strokeDasharray={`${progressPercent}, 100`}
+              />
+            </svg>
+            <span className="today-percent">{progressPercent}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Seven Core Modules */}
+      <div className="home-modules-section">
+        <h2 className="section-title">核心模块</h2>
+        <div className="home-modules-grid">
+          {SYSTEM_MODULES.slice(0, 4).map((m) => (
+            <Link key={m.key} to={m.route} className="home-module-card">
+              <div className="home-module-icon" style={{ color: m.color }}>{m.icon}</div>
+              <div className="home-module-name">{m.label}</div>
+              <div className="home-module-desc">{m.desc}</div>
+            </Link>
+          ))}
+        </div>
+        <div className="home-modules-grid home-modules-grid-3">
+          {SYSTEM_MODULES.slice(4).map((m) => (
+            <Link key={m.key} to={m.route} className="home-module-card">
+              <div className="home-module-icon" style={{ color: m.color }}>{m.icon}</div>
+              <div className="home-module-name">{m.label}</div>
+              <div className="home-module-desc">{m.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Continue Learning */}
+      <div className="home-continue-section">
+        <h2 className="section-title">继续学习</h2>
+        <div className="home-continue-grid">
           {MODULES.map((m) => {
             const words = getModuleWords(m.key);
-            const count = words.length;
+            const progress = loadProgress(m.key);
+            const learned = progress.learned.length;
+            const total = words.length;
+            if (total === 0) return null;
             return (
               <Link
                 key={m.key}
-                to={`/wordlist?module=${m.key}`}
-                className={`module-card ${count === 0 ? 'empty' : ''}`}
+                to={`/vocabulary/learn?module=${m.key}`}
+                className="home-continue-card"
               >
-                <span className="module-icon">{m.icon}</span>
-                <span className="module-label">{m.label}</span>
-                <span className="module-count">{count} 词</span>
+                <span className="continue-icon">{m.icon}</span>
+                <div className="continue-info">
+                  <span className="continue-name">{m.label}</span>
+                  <span className="continue-count">{learned}/{total} 词</span>
+                </div>
+                <span className="continue-arrow">→</span>
               </Link>
             );
           })}
         </div>
-      </section>
+      </div>
 
-      {/* 核心训练 */}
-      <section className="home-section">
-        <h2 className="section-title">🎯 核心训练</h2>
-        <div className="home-training-grid">
-          <Link to={`/chinese-challenge?module=${selectedModule}`} className="training-card">
-            <span className="training-icon">🀄</span>
-            <span className="training-name">释义训练</span>
-            <span className="training-desc">看中文写英文</span>
-          </Link>
-          <Link to={`/quick-review?module=${selectedModule}`} className="training-card">
-            <span className="training-icon">⚡</span>
-            <span className="training-name">快速识词</span>
-            <span className="training-desc">快速标记认识</span>
-          </Link>
-          <Link to={`/choice-quiz?module=${selectedModule}`} className="training-card">
-            <span className="training-icon">📝</span>
-            <span className="training-name">选择练习</span>
-            <span className="training-desc">选择正确释义</span>
-          </Link>
-        </div>
-      </section>
-
-      {/* 复习强化 */}
-      <section className="home-section">
-        <h2 className="section-title">🔄 复习强化</h2>
-        <div className="home-training-grid home-training-grid-2">
-          <Link to={`/favorite-quiz?module=${selectedModule}`} className="training-card">
-            <span className="training-icon">⭐</span>
-            <span className="training-name">重点词</span>
-            <span className="training-desc">收藏的重点词汇</span>
-          </Link>
-          <Link to={`/wrongbook?module=${selectedModule}`} className="training-card">
-            <span className="training-icon">📕</span>
-            <span className="training-name">错词本</span>
-            <span className="training-desc">易错词强化练习</span>
-          </Link>
-        </div>
-      </section>
+      {/* Footer */}
+      <div className="home-footer">
+        <p>淳淳英语 · 面向天津中考的英语学习系统</p>
+      </div>
     </div>
   );
 }
