@@ -348,6 +348,15 @@ body {
   background: #dc2626;
 }
 
+.btn-secondary {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-300);
+}
+
 .home-actions-primary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1790,6 +1799,185 @@ body {
 .history-score {
   font-weight: 600;
   color: var(--gray-700);
+}
+
+/* Chinese Challenge - Module Selection */
+.module-select-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.module-select-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.module-select-header p {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+}
+
+.module-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.module-select-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.module-select-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.module-select-icon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+}
+
+.module-select-info {
+  flex: 1;
+}
+
+.module-select-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.module-select-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.module-select-progress {
+  margin-top: 4px;
+}
+
+.progress-hint {
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.module-select-arrow {
+  font-size: 1.2rem;
+  color: var(--gray-400);
+}
+
+/* Chinese Challenge - Training Header */
+.chinese-challenge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.btn-back:hover {
+  text-decoration: underline;
+}
+
+.chinese-challenge-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.chinese-challenge-progress-text {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+/* Chinese Challenge - Reveal Section */
+.chinese-reveal {
+  padding: 16px;
+}
+
+.reveal-meaning,
+.reveal-phonetic {
+  margin-bottom: 8px;
+}
+
+.reveal-label {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.reveal-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.reveal-example {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+}
+
+.reveal-example-en {
+  font-size: 0.95rem;
+  color: var(--gray-800);
+  margin-bottom: 4px;
+}
+
+.reveal-example-zh {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.reveal-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--orange-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--orange);
+}
+
+/* Yellow Button */
+.btn-yellow {
+  background: var(--orange);
+  color: white;
+}
+
+.btn-yellow:hover {
+  background: #d97706;
+}
+
+/* Score Bar Variants */
+.score-neutral {
+  color: var(--orange);
 }
 
 /* Quick Review Page */

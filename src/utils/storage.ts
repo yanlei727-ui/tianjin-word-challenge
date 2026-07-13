@@ -301,3 +301,88 @@ export function getFavoritesByModule(module?: ModuleKey): FavoriteRecord[] {
   }
   return favorites;
 }
+
+// Chinese Challenge (分类释义训练) position per module
+const CHALLENGE_POSITION_KEY = 'tianjin-word-challenge-chinese-pos';
+
+export function loadChineseChallengePosition(module: ModuleKey): number {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+    if (!raw) return 0;
+    const data = JSON.parse(raw);
+    return data[module] || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function saveChineseChallengePosition(module: ModuleKey, position: number): void {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+    const data = raw ? JSON.parse(raw) : {};
+    data[module] = position;
+    localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(data));
+  } catch {
+    // ignore
+  }
+}
+
+// Chinese Challenge results per module
+const CHALLENGE_RESULTS_KEY = 'tianjin-word-challenge-chinese-results';
+
+export interface ChineseChallengeResult {
+  wordId: number;
+  status: 'mastered' | 'familiar' | 'unfamiliar';
+}
+
+export function loadChineseChallengeResults(module: ModuleKey): ChineseChallengeResult[] {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_RESULTS_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return data[module] || [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveChineseChallengeResult(module: ModuleKey, result: ChineseChallengeResult): void {
+  try {
+    const raw = localStorage.getItem(CHALLENGE_RESULTS_KEY);
+    const data = raw ? JSON.parse(raw) : {};
+    if (!data[module]) data[module] = [];
+    const existing = data[module].findIndex((r: ChineseChallengeResult) => r.wordId === result.wordId);
+    if (existing >= 0) {
+      data[module][existing] = result;
+    } else {
+      data[module].push(result);
+    }
+    localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(data));
+  } catch {
+    // ignore
+  }
+}
+
+export function resetChineseChallenge(module?: ModuleKey): void {
+  try {
+    if (module) {
+      const raw = localStorage.getItem(CHALLENGE_POSITION_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        delete data[module];
+        localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(data));
+      }
+      const raw2 = localStorage.getItem(CHALLENGE_RESULTS_KEY);
+      if (raw2) {
+        const data2 = JSON.parse(raw2);
+        delete data2[module];
+        localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(data2));
+      }
+    } else {
+      localStorage.removeItem(CHALLENGE_POSITION_KEY);
+      localStorage.removeItem(CHALLENGE_RESULTS_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
