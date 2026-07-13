@@ -5,6 +5,9 @@ import { grammarPronoun } from './grammar-pronoun';
 import { grammarNumeral } from './grammar-numeral';
 import { grammarPreposition } from './grammar-preposition';
 import { grammarConjunction } from './grammar-conjunction';
+import { grammarAdjAdv } from './grammar-adj-adv';
+import { grammarVerbUsage } from './grammar-verb-usage';
+import { grammarModal } from './grammar-modal';
 
 export const grammarTopics: GrammarTopic[] = [
   grammarNoun,
@@ -13,6 +16,9 @@ export const grammarTopics: GrammarTopic[] = [
   grammarNumeral,
   grammarPreposition,
   grammarConjunction,
+  grammarAdjAdv,
+  grammarVerbUsage,
+  grammarModal,
 ];
 
 export function getGrammarTopic(id: string): GrammarTopic | undefined {
