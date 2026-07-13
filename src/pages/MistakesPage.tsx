@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { loadProgress } from '../utils/storage';
+import { NotebookTabs } from 'lucide-react';
+import { loadProgress, loadGrammarWrongBook } from '../utils/storage';
 import { getModuleWords, MODULES, type ModuleKey } from '../utils/modules';
 import { EmptyState } from '../components/shared';
 
@@ -45,25 +46,35 @@ export default function MistakesPage() {
   }, []);
 
   const filteredMistakes = useMemo(() => {
-    let list = vocabMistakes;
-    if (activeTab !== 'all') {
-      if (activeTab === 'vocabulary') {
-        // already filtered
-      } else {
-        // Other tabs have no data yet
-        list = [];
-      }
+    if (activeTab === 'vocabulary') return vocabMistakes;
+    if (activeTab === 'grammar') {
+      return loadGrammarWrongBook().map((r) => ({
+        word: r.questionId,
+        phonetic: r.topicId,
+        meaning: r.explanation,
+        module: 'grammar' as ModuleKey,
+        wordId: 0,
+        count: r.count,
+        lastWrongTime: r.lastWrongTime,
+      }));
     }
-    return list;
+    if (activeTab === 'all') return vocabMistakes;
+    return [];
   }, [vocabMistakes, activeTab]);
 
-  const totalCount = vocabMistakes.length;
+  const totalCount = useMemo(() => {
+    const vocabCount = vocabMistakes.length;
+    const grammarCount = loadGrammarWrongBook().length;
+    if (activeTab === 'all') return vocabCount + grammarCount;
+    if (activeTab === 'vocabulary') return vocabCount;
+    if (activeTab === 'grammar') return grammarCount;
+    return 0;
+  }, [vocabMistakes, activeTab]);
 
   return (
     <div className="page mistakes-page">
       <div className="module-page-header">
-        <Link to="/" className="btn-back">← 返回首页</Link>
-        <h1>📕 错题本</h1>
+        <h1><NotebookTabs size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 错题本</h1>
         <p className="module-page-subtitle">全部错题集中管理</p>
       </div>
 

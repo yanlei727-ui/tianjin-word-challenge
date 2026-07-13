@@ -39,27 +39,41 @@ export interface VocabularyItem {
   note: string;
 }
 
-// --- 语法专项 ---
+// --- 语法专项（新版） ---
 export interface GrammarTopic {
   id: string;
   title: string;
-  description: string;
-  rules: GrammarRule[];
-  examples: GrammarExample[];
-  exercises: Question[];
-  isSample?: boolean;
+  subtitle: string;
+  sections: GrammarSection[];
+  exercises: GrammarExercise[];
 }
 
-export interface GrammarRule {
+export interface GrammarSection {
+  id: string;
+  type: 'knowledge' | 'examples' | 'mistakes' | 'tips' | 'patterns';
   title: string;
-  content: string;
-  tips?: string[];
+  content?: string;
+  items?: GrammarSectionItem[];
 }
 
-export interface GrammarExample {
-  sentence: string;
-  translation: string;
+export interface GrammarSectionItem {
+  label?: string;
+  english?: string;
+  chinese?: string;
   highlight?: string;
+  note?: string;
+}
+
+export interface GrammarExercise {
+  id: string;
+  type: 'choice' | 'fill';
+  difficulty: 'basic' | 'advanced';
+  stem: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation: string;
+  knowledgePoint: string;
+  mistakeReason?: string;
 }
 
 // --- 阅读理解 ---

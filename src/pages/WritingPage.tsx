@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { PenLine, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
 import { sampleWritingTopics } from '../data/sample-writing';
-import { ComingSoonState } from '../components/shared';
 
 type View = 'list' | 'write';
 
@@ -16,9 +15,9 @@ export default function WritingPage() {
       <div className="page writing-page">
         <div className="module-page-header">
           <button className="btn-back" onClick={() => { setView('list'); setSelectedTopic(null); setUserEssay(''); setShowReference(false); }}>
-            ← 返回
+            <ArrowLeft size={16} style={{ marginRight: 4, verticalAlign: -2 }} /> 返回
           </button>
-          <h1>✍️ 作文训练</h1>
+          <h1><PenLine size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 作文训练</h1>
         </div>
 
         <div className="writing-exercise">
@@ -90,8 +89,7 @@ export default function WritingPage() {
   return (
     <div className="page writing-page">
       <div className="module-page-header">
-        <Link to="/" className="btn-back">← 返回首页</Link>
-        <h1>✍️ 作文训练</h1>
+        <h1><PenLine size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 作文训练</h1>
         <p className="module-page-subtitle">中考英语写作能力提升</p>
       </div>
 
@@ -106,17 +104,26 @@ export default function WritingPage() {
             className="writing-list-card"
             onClick={() => { setSelectedTopic(topic); setView('write'); }}
           >
-            <div className="writing-list-title">{topic.title}</div>
-            <div className="writing-list-prompt">{topic.prompt}</div>
+            <div className="writing-list-info">
+              <div className="writing-list-title">{topic.title}</div>
+              <div className="writing-list-prompt">{topic.prompt}</div>
+            </div>
+            <div className="writing-list-arrow">
+              <ArrowRight size={16} />
+            </div>
           </button>
         ))}
       </div>
 
-      <ComingSoonState
-        icon="✍️"
-        title="更多作文题目正在建设中"
-        features={['书信写作', '日记写作', '议论文', '看图作文', '话题作文', '好词好句积累']}
-      />
+      <div className="shared-coming-soon">
+        <div className="shared-coming-icon">
+          <Construction size={20} />
+        </div>
+        <div className="shared-coming-body">
+          <div className="shared-coming-title">更多作文题目持续更新中</div>
+          <div className="shared-coming-tags">书信写作 · 日记写作 · 议论文 · 看图作文 · 话题作文</div>
+        </div>
+      </div>
 
       <div className="grammar-sample-tag">📌 以上为示例内容，更多作文题目持续添加中</div>
     </div>

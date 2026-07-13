@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { ListChecks, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
 import { sampleClozePassages } from '../data/sample-cloze';
-import { ComingSoonState } from '../components/shared';
 
 type View = 'list' | 'exercise';
 
@@ -20,9 +19,9 @@ export default function ClozePage() {
       <div className="page cloze-page">
         <div className="module-page-header">
           <button className="btn-back" onClick={() => { setView('list'); setSelectedPassage(null); setAnswers({}); setShowResults(false); }}>
-            ← 返回
+            <ArrowLeft size={16} style={{ marginRight: 4, verticalAlign: -2 }} /> 返回
           </button>
-          <h1>📝 完形填空</h1>
+          <h1><ListChecks size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 完形填空</h1>
         </div>
 
         <div className="cloze-exercise">
@@ -105,8 +104,7 @@ export default function ClozePage() {
   return (
     <div className="page cloze-page">
       <div className="module-page-header">
-        <Link to="/" className="btn-back">← 返回首页</Link>
-        <h1>📝 完形填空</h1>
+        <h1><ListChecks size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 完形填空</h1>
         <p className="module-page-subtitle">中考英语完形填空训练</p>
       </div>
 
@@ -121,20 +119,29 @@ export default function ClozePage() {
             className="cloze-list-card"
             onClick={() => { setSelectedPassage(passage); setView('exercise'); }}
           >
-            <div className="cloze-list-title">{passage.title}</div>
-            <div className="cloze-list-meta">
-              <span>{passage.category}</span>
-              <span>{passage.blanks.length} 空</span>
+            <div className="cloze-list-info">
+              <div className="cloze-list-title">{passage.title}</div>
+              <div className="reading-list-meta">
+                <span>{passage.category}</span>
+                <span>{passage.blanks.length} 空</span>
+              </div>
+            </div>
+            <div className="cloze-list-arrow">
+              <ArrowRight size={16} />
             </div>
           </button>
         ))}
       </div>
 
-      <ComingSoonState
-        icon="📝"
-        title="更多完形填空正在建设中"
-        features={['记叙文完形', '说明文完形', '议论文完形', '上下文逻辑训练', '干扰项分析']}
-      />
+      <div className="shared-coming-soon">
+        <div className="shared-coming-icon">
+          <Construction size={20} />
+        </div>
+        <div className="shared-coming-body">
+          <div className="shared-coming-title">更多完形填空持续更新中</div>
+          <div className="shared-coming-tags">记叙文 · 说明文 · 议论文 · 逻辑训练 · 干扰项分析</div>
+        </div>
+      </div>
 
       <div className="grammar-sample-tag">📌 以上为示例内容，更多完形填空持续添加中</div>
     </div>

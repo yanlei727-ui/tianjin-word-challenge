@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { FileText, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
 import { sampleReadingPassages } from '../data/sample-reading';
-import { ComingSoonState } from '../components/shared';
 
 type View = 'list' | 'reading';
 
@@ -16,9 +15,9 @@ export default function ReadingPage() {
       <div className="page reading-page">
         <div className="module-page-header">
           <button className="btn-back" onClick={() => { setView('list'); setSelectedPassage(null); setAnswers({}); setShowResults(false); }}>
-            ← 返回
+            <ArrowLeft size={16} style={{ marginRight: 4, verticalAlign: -2 }} /> 返回
           </button>
-          <h1>📰 阅读理解</h1>
+          <h1><FileText size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 阅读理解</h1>
         </div>
 
         <div className="reading-article">
@@ -110,8 +109,7 @@ export default function ReadingPage() {
   return (
     <div className="page reading-page">
       <div className="module-page-header">
-        <Link to="/" className="btn-back">← 返回首页</Link>
-        <h1>📰 阅读理解</h1>
+        <h1><FileText size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 阅读理解</h1>
         <p className="module-page-subtitle">中考英语阅读理解训练</p>
       </div>
 
@@ -126,21 +124,31 @@ export default function ReadingPage() {
             className="reading-list-card"
             onClick={() => { setSelectedPassage(passage); setView('reading'); }}
           >
-            <div className="reading-list-title">{passage.title}</div>
-            <div className="reading-list-meta">
-              <span>{passage.category}</span>
-              <span>{passage.difficulty === 'easy' ? '简单' : passage.difficulty === 'medium' ? '中等' : '较难'}</span>
-              <span>{passage.wordCount} 词</span>
+            <div className="reading-list-info">
+              <div className="reading-list-title">{passage.title}</div>
+              <div className="reading-list-meta">
+                <span>{passage.category}</span>
+                <span>{passage.difficulty === 'easy' ? '简单' : passage.difficulty === 'medium' ? '中等' : '较难'}</span>
+                <span>{passage.wordCount} 词</span>
+                <span>{passage.questions.length} 题</span>
+              </div>
+            </div>
+            <div className="reading-list-arrow">
+              <ArrowRight size={16} />
             </div>
           </button>
         ))}
       </div>
 
-      <ComingSoonState
-        icon="📰"
-        title="更多阅读文章正在建设中"
-        features={['日常生活类', '社会文化类', '科普知识类', '人物故事类', '图表信息类']}
-      />
+      <div className="shared-coming-soon">
+        <div className="shared-coming-icon">
+          <Construction size={20} />
+        </div>
+        <div className="shared-coming-body">
+          <div className="shared-coming-title">更多阅读内容持续更新中</div>
+          <div className="shared-coming-tags">日常生活 · 社会文化 · 科普知识 · 人物故事 · 图表信息</div>
+        </div>
+      </div>
 
       <div className="grammar-sample-tag">📌 以上为示例内容，更多阅读文章持续添加中</div>
     </div>

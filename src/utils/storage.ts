@@ -377,11 +377,9 @@ export function resetChineseChallenge(module?: ModuleKey, groupIndex?: number): 
     const resultsData = resultsRaw ? JSON.parse(resultsRaw) : {};
 
     if (module && groupIndex !== undefined) {
-      // Reset specific group
       delete posData[getPositionKey(module, groupIndex)];
       delete resultsData[getPositionKey(module, groupIndex)];
     } else if (module) {
-      // Reset all groups in module
       Object.keys(posData).forEach((key) => {
         if (key.startsWith(`${module}:`)) delete posData[key];
       });
@@ -389,7 +387,6 @@ export function resetChineseChallenge(module?: ModuleKey, groupIndex?: number): 
         if (key.startsWith(`${module}:`)) delete resultsData[key];
       });
     } else {
-      // Reset everything
       localStorage.removeItem(CHALLENGE_POSITION_KEY);
       localStorage.removeItem(CHALLENGE_RESULTS_KEY);
       return;
@@ -397,6 +394,71 @@ export function resetChineseChallenge(module?: ModuleKey, groupIndex?: number): 
 
     localStorage.setItem(CHALLENGE_POSITION_KEY, JSON.stringify(posData));
     localStorage.setItem(CHALLENGE_RESULTS_KEY, JSON.stringify(resultsData));
+  } catch {
+    // ignore
+  }
+}
+
+// ============================================================
+// Grammar Wrong Book
+// ============================================================
+export interface GrammarWrongRecord {
+  questionId: string;
+  topicId: string;
+  wrongAnswer: string;
+  correctAnswer: string;
+  explanation: string;
+  count: number;
+  lastWrongTime: string;
+}
+
+const GRAMMAR_WRONG_KEY = 'tianjin-word-challenge-grammar-wrong';
+
+export function loadGrammarWrongBook(): GrammarWrongRecord[] {
+  try {
+    const raw = localStorage.getItem(GRAMMAR_WRONG_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function addGrammarWrongRecord(record: Omit<GrammarWrongRecord, 'count' | 'lastWrongTime'>): GrammarWrongRecord[] {
+  const records = loadGrammarWrongBook();
+  const existing = records.find((r) => r.questionId === record.questionId);
+  if (existing) {
+    existing.count += 1;
+    existing.lastWrongTime = new Date().toISOString();
+    existing.wrongAnswer = record.wrongAnswer;
+  } else {
+    records.push({
+      ...record,
+      count: 1,
+      lastWrongTime: new Date().toISOString(),
+    });
+  }
+  try {
+    localStorage.setItem(GRAMMAR_WRONG_KEY, JSON.stringify(records));
+  } catch {
+    // ignore
+  }
+  return records;
+}
+
+export function removeGrammarWrongRecord(questionId: string): GrammarWrongRecord[] {
+  const records = loadGrammarWrongBook().filter((r) => r.questionId !== questionId);
+  try {
+    localStorage.setItem(GRAMMAR_WRONG_KEY, JSON.stringify(records));
+  } catch {
+    // ignore
+  }
+  return records;
+}
+
+export function clearGrammarWrongBook(): void {
+  try {
+    localStorage.removeItem(GRAMMAR_WRONG_KEY);
   } catch {
     // ignore
   }
