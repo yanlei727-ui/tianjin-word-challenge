@@ -208,6 +208,7 @@ export default function ChoiceQuizPage() {
       <div className="quiz-card">
         <div className="quiz-type-label">🔤 英译中</div>
         <div className="quiz-word">{currentQ.word}</div>
+        <div className="quiz-phonetic">{currentQ.phonetic}</div>
         <button className="btn-speak" onClick={() => speakWord(currentQ.word)}>
           🔊 朗读
         </button>
