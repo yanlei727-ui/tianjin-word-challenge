@@ -11,9 +11,9 @@ export default function HomePage() {
   return (
     <div className="page home-page">
       <div className="home-hero">
-        <h1 className="home-title">严梓淳</h1>
-        <p className="home-subtitle">英语学习系统</p>
-        <p className="home-tagline">为中考英语打造的个人学习空间</p>
+        <h1 className="home-brand">淳淳英语</h1>
+        <p className="home-english">English Learning Space</p>
+        <p className="home-tagline">中考英语专项训练 · 持续成长记录</p>
       </div>
 
       {/* 单词本浏览 */}

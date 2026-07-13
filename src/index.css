@@ -128,29 +128,47 @@ body {
 /* Home Page */
 .home-hero {
   text-align: center;
-  padding: 32px 16px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
+  padding: 48px 24px 40px;
+  background: linear-gradient(145deg, #6366f1, #8b5cf6, #a78bfa);
   border-radius: var(--radius);
   color: white;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
 }
 
-.home-title {
-  font-size: 1.8rem;
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.home-brand {
+  font-size: 2.8rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.home-subtitle {
-  font-size: 0.9rem;
-  opacity: 0.9;
-  margin-bottom: 8px;
+.home-english {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 16px;
 }
 
 .home-tagline {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  margin-top: 4px;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
 }
 
 .stats-grid {
