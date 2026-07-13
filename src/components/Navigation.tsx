@@ -4,6 +4,7 @@ const navItems = [
   { to: '/', label: '首页', icon: '🏠' },
   { to: '/quick-review', label: '识词', icon: '⚡' },
   { to: '/choice-quiz', label: '选择', icon: '📝' },
+  { to: '/chinese-challenge', label: '释义', icon: '🀄' },
   { to: '/favorites', label: '重点词', icon: '⭐' },
   { to: '/wrongbook', label: '错词本', icon: '📋' },
   { to: '/progress', label: '进度', icon: '📊' },
