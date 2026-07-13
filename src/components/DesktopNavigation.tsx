@@ -8,7 +8,6 @@ const navItems = [
   { to: '/cloze', label: '完形填空' },
   { to: '/writing', label: '作文训练' },
   { to: '/mistakes', label: '错题本' },
-  { to: '/plan', label: '学习计划' },
 ];
 
 export default function DesktopNavigation() {

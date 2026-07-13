@@ -5,7 +5,6 @@ const navItems = [
   { to: '/vocabulary', label: '词汇', icon: 'book' },
   { to: '/grammar', label: '专项', icon: 'star', isGroup: true },
   { to: '/mistakes', label: '错题', icon: 'alert' },
-  { to: '/plan', label: '更多', icon: 'more' },
 ];
 
 export default function MobileBottomNavigation() {

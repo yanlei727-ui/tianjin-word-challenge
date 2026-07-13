@@ -8,7 +8,6 @@ import ReadingPage from './pages/ReadingPage';
 import ClozePage from './pages/ClozePage';
 import WritingPage from './pages/WritingPage';
 import MistakesPage from './pages/MistakesPage';
-import PlanPage from './pages/PlanPage';
 import LearnPage from './pages/LearnPage';
 import WordListPage from './pages/WordListPage';
 import ChallengePage from './pages/ChallengePage';
@@ -35,7 +34,6 @@ export default function App() {
             <Route path="/cloze" element={<ClozePage />} />
             <Route path="/writing" element={<WritingPage />} />
             <Route path="/mistakes" element={<MistakesPage />} />
-            <Route path="/plan" element={<PlanPage />} />
 
             {/* Vocabulary sub-routes (preserved) */}
             <Route path="/learn" element={<LearnPage />} />

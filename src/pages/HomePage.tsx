@@ -9,7 +9,6 @@ const SYSTEM_MODULES = [
   { key: 'cloze', label: '完形填空', icon: '📝', color: '#f59e0b', desc: '完形填空练习', route: '/cloze' },
   { key: 'writing', label: '作文训练', icon: '✍️', color: '#8b5cf6', desc: '写作能力提升', route: '/writing' },
   { key: 'mistakes', label: '错题本', icon: '📕', color: 'var(--red)', desc: '错题回顾巩固', route: '/mistakes' },
-  { key: 'plan', label: '学习计划', icon: '📋', color: '#06b6d4', desc: '规划学习进度', route: '/plan' },
 ];
 
 function getVocabStats() {
