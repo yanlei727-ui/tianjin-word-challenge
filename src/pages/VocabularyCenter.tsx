@@ -98,8 +98,8 @@ export default function VocabularyCenter() {
             <div className="vc-training-icon">
               <Headphones size={26} strokeWidth={2} />
             </div>
-            <span className="vc-training-name">自动认词</span>
-            <span className="vc-training-desc">连续朗读单词，快速建立词形与发音联系</span>
+            <span className="vc-training-name">听词速记</span>
+            <span className="vc-training-desc">自动连续朗读单词，隐藏中文释义，快速建立词形与发音联系</span>
           </Link>
           <Link to="/listen-speed" className="vc-training-card">
             <div className="vc-training-icon" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
