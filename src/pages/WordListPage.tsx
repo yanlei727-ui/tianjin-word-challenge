@@ -81,6 +81,12 @@ export default function WordListPage() {
           <h1 className="wl-title">{moduleInfo.icon} {moduleInfo.label}</h1>
           <p className="wl-subtitle">{allWords.length}个中考高频词</p>
         </div>
+        <Link
+          to={`/auto-recognize?module=${module}&filter=${filterMode}${filterLetter !== 'ALL' ? `&letter=${filterLetter}` : ''}`}
+          className="wl-auto-recognize-btn"
+        >
+          🎧 自动认词
+        </Link>
       </div>
 
       <div className="wl-search">

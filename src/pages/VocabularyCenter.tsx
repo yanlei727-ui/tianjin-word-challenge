@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Shapes, FileText, ListChecks, NotebookTabs, Star, Target, Zap, Pencil, Headphones, FileInput, ArrowRight } from 'lucide-react';
+import { BookOpen, Shapes, FileText, ListChecks, NotebookTabs, Star, Target, Zap, Pencil, Headphones, FileInput, ArrowRight, AudioLines } from 'lucide-react';
 import { MODULES, getModuleWords } from '../utils/modules';
 import { loadProgress } from '../utils/storage';
 
@@ -9,12 +9,25 @@ const SAMPLE_WORDS: Record<string, string[]> = {
   verb: ['accept', 'achieve', 'believe', 'choose'],
 };
 
+const MODULE_ICONS: Record<string, typeof BookOpen> = {
+  noun: BookOpen,
+  adj_adv: Shapes,
+  verb: FileText,
+};
+
+const MODULE_COLORS: Record<string, string> = {
+  noun: 'var(--primary)',
+  adj_adv: 'var(--green)',
+  verb: 'var(--orange)',
+};
+
 export default function VocabularyCenter() {
   return (
     <div className="page vocabulary-center">
       {/* Word Lists */}
       <section className="vc-section">
-        <h2 className="section-title">单词本</h2>
+        <h2 className="vc-section-title">单词本</h2>
+        <p className="vc-section-desc">按词性分类学习，系统掌握中考核心词汇</p>
         <div className="vc-card-grid">
           {MODULES.map((m) => {
             const words = getModuleWords(m.key);
@@ -22,27 +35,33 @@ export default function VocabularyCenter() {
             const learned = progress.learned.length;
             const count = words.length;
             const samples = SAMPLE_WORDS[m.key] || [];
+            const IconComp = MODULE_ICONS[m.key] || BookOpen;
+            const iconColor = MODULE_COLORS[m.key] || 'var(--primary)';
             return (
               <Link
                 key={m.key}
                 to={`/wordlist?module=${m.key}`}
                 className="vc-list-card"
               >
-                <div className="home-module-icon" style={{ width: 40, height: 40, borderRadius: 10 }}>
-                  <BookOpen size={22} strokeWidth={2} />
+                <div className="home-module-icon" style={{ width: 40, height: 40, borderRadius: 10, background: `${iconColor}15` }}>
+                  <IconComp size={22} strokeWidth={2} color={iconColor} />
                 </div>
                 <div className="vc-list-info">
                   <span className="vc-list-name">{m.label}</span>
                   <span className="vc-list-count">
-                    {count > 0 ? `${count} 词${learned > 0 ? ` · 已学 ${learned} 词` : ''}` : '内容持续更新中'}
+                    {count > 0 ? `${count} 个单词${learned > 0 ? ` · 已学 ${learned} 个` : ''}` : '内容持续更新中'}
                   </span>
                   {count > 0 && samples.length > 0 && (
-                    <span className="vc-list-count" style={{ marginTop: 1, fontSize: '0.72rem', color: 'var(--gray-400)' }}>
-                      {samples.join(' · ')}
-                    </span>
+                    <div className="vc-list-bottom">
+                      <span className="vc-list-samples">
+                        {samples.join(' · ')}
+                      </span>
+                      <span className="vc-list-arrow-wrap">
+                        <ArrowRight size={16} />
+                      </span>
+                    </div>
                   )}
                 </div>
-                {count > 0 && <ArrowRight size={16} color="var(--gray-400)" />}
               </Link>
             );
           })}
@@ -50,85 +69,93 @@ export default function VocabularyCenter() {
       </section>
 
       {/* Core Training */}
-      <section className="vc-section">
-        <h2 className="section-title">核心训练</h2>
+      <section className="vc-section vc-section-gap">
+        <h2 className="vc-section-title">核心训练</h2>
+        <p className="vc-section-desc">通过多种题型强化词义理解和快速识别</p>
         <div className="vc-training-grid">
           <Link to="/chinese-challenge" className="vc-training-card">
             <div className="vc-training-icon">
-              <FileText size={24} strokeWidth={2} />
+              <FileText size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">释义训练</span>
-            <span className="vc-training-desc">看中文写英文</span>
+            <span className="vc-training-desc">看中文，写出对应英文</span>
           </Link>
           <Link to="/quick-review" className="vc-training-card">
             <div className="vc-training-icon">
-              <Zap size={24} strokeWidth={2} />
+              <Zap size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">快速识词</span>
-            <span className="vc-training-desc">快速标记认识</span>
+            <span className="vc-training-desc">快速判断单词与中文释义</span>
           </Link>
           <Link to="/choice-quiz" className="vc-training-card">
             <div className="vc-training-icon">
-              <ListChecks size={24} strokeWidth={2} />
+              <ListChecks size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">选择练习</span>
-            <span className="vc-training-desc">选择正确释义</span>
+            <span className="vc-training-desc">根据题目选择正确答案</span>
+          </Link>
+          <Link to="/auto-recognize" className="vc-training-card">
+            <div className="vc-training-icon">
+              <Headphones size={26} strokeWidth={2} />
+            </div>
+            <span className="vc-training-name">自动认词</span>
+            <span className="vc-training-desc">连续朗读单词，快速建立词形与发音联系</span>
+          </Link>
+          <Link to="/listen-speed" className="vc-training-card">
+            <div className="vc-training-icon" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
+              <AudioLines size={26} strokeWidth={2} />
+            </div>
+            <span className="vc-training-name">听词速记</span>
+            <span className="vc-training-desc">自动播放发音，快速建立声音与拼写联系</span>
           </Link>
           <div className="vc-training-card coming-soon">
             <span className="vc-training-badge">即将上线</span>
             <div className="vc-training-icon">
-              <Pencil size={24} strokeWidth={2} />
+              <Pencil size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">拼写训练</span>
-            <span className="vc-training-desc">拼写强化练习</span>
+            <span className="vc-training-desc">根据提示完成单词拼写</span>
           </div>
           <div className="vc-training-card coming-soon">
             <span className="vc-training-badge">即将上线</span>
             <div className="vc-training-icon">
-              <Headphones size={24} strokeWidth={2} />
-            </div>
-            <span className="vc-training-name">听音选词</span>
-            <span className="vc-training-desc">听力词汇训练</span>
-          </div>
-          <div className="vc-training-card coming-soon">
-            <span className="vc-training-badge">即将上线</span>
-            <div className="vc-training-icon">
-              <FileInput size={24} strokeWidth={2} />
+              <FileInput size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">例句填空</span>
-            <span className="vc-training-desc">语境词汇运用</span>
+            <span className="vc-training-desc">结合语境完成单词填空</span>
           </div>
         </div>
       </section>
 
       {/* Review */}
-      <section className="vc-section">
-        <h2 className="section-title">复习强化</h2>
+      <section className="vc-section vc-section-gap">
+        <h2 className="vc-section-title">复习强化</h2>
+        <p className="vc-section-desc">集中复习重点词和易错词，巩固学习成果</p>
         <div className="vc-training-grid vc-training-grid-2">
           <Link to="/favorites" className="vc-training-card">
             <div className="vc-training-icon">
-              <Star size={24} strokeWidth={2} />
+              <Star size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">重点词</span>
             <span className="vc-training-desc">收藏的重点词汇</span>
           </Link>
           <Link to="/wrongbook" className="vc-training-card">
             <div className="vc-training-icon">
-              <NotebookTabs size={24} strokeWidth={2} />
+              <NotebookTabs size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">易错词</span>
             <span className="vc-training-desc">错词本强化练习</span>
           </Link>
           <Link to="/challenge" className="vc-training-card">
             <div className="vc-training-icon">
-              <Target size={24} strokeWidth={2} />
+              <Target size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">闯关练习</span>
             <span className="vc-training-desc">分关卡挑战</span>
           </Link>
           <Link to="/favorite-quiz" className="vc-training-card">
             <div className="vc-training-icon">
-              <Shapes size={24} strokeWidth={2} />
+              <Shapes size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">闪卡复习</span>
             <span className="vc-training-desc">翻卡记忆</span>
