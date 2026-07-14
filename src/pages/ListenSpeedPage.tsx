@@ -18,21 +18,27 @@ const PAUSE_AFTER_ALL_REPEATS = 2000;
 // localStorage key helpers
 const ORDER_KEY = 'ls_playback_order';
 
+type WordItem = { module: ModuleKey; id: number; [k: string]: unknown };
+
+function getWordKey(word: WordItem): string {
+  return `${word.module}_${word.id}`;
+}
+
 function getPositionKey(scope: Scope, order: Order): string {
   return `ls_position_${scope}_${order}`;
 }
 
-function savePosition(index: number, wordId: number, scope: Scope, order: Order): void {
+function savePosition(index: number, wordKey: string, scope: Scope, order: Order): void {
   try {
     localStorage.setItem(getPositionKey(scope, order), JSON.stringify({
       index,
-      wordId,
+      wordKey,
       updatedAt: Date.now(),
     }));
   } catch { /* ignore */ }
 }
 
-function loadPosition(scope: Scope, order: Order): { index: number; wordId?: number; updatedAt: number } | null {
+function loadPosition(scope: Scope, order: Order): { index: number; wordKey?: string; wordId?: number; updatedAt: number } | null {
   try {
     const raw = localStorage.getItem(getPositionKey(scope, order));
     if (!raw) return null;
@@ -172,7 +178,7 @@ export default function ListenSpeedPage() {
 
     // 3. Save position
     const targetWord = wordsRef.current[targetIndex];
-    if (targetWord) savePosition(targetIndex, targetWord.id, scope, order);
+    if (targetWord) savePosition(targetIndex, getWordKey(targetWord), scope, order);
 
     // 4. Auto-play if requested (or if currently playing and not paused)
     const shouldPlay = opts?.autoPlay ?? (isPlayingRef.current && !isPausedRef.current);
@@ -272,11 +278,24 @@ export default function ListenSpeedPage() {
     const saved = loadPosition(scope, order);
     if (!saved || saved.index <= 0) return;
 
-    if (order === 'random' && saved.wordId) {
-      // Random mode: find word by ID in current shuffled list
-      const foundIndex = words.findIndex(w => w.id === saved.wordId);
+    if (order === 'random') {
+      let foundIndex = -1;
+
+      // New format: wordKey (module_id)
+      if (saved.wordKey) {
+        foundIndex = words.findIndex(w => getWordKey(w) === saved.wordKey);
+      }
+
+      // Legacy fallback: wordId (may match wrong word if IDs overlap)
+      if (foundIndex < 0 && saved.wordId) {
+        foundIndex = words.findIndex(w => w.id === saved.wordId);
+      }
+
       if (foundIndex > 0) {
         setResumeInfo({ index: foundIndex, show: true });
+      } else if (saved.index > 0 && saved.index < words.length) {
+        // Final fallback: use saved index
+        setResumeInfo({ index: saved.index, show: true });
       }
     } else {
       // Sequential mode: use saved index directly
@@ -298,7 +317,7 @@ export default function ListenSpeedPage() {
     setStartTime(Date.now());
     setElapsedTime(0);
     const firstWord = wordsRef.current[0];
-    if (firstWord) savePosition(0, firstWord.id, scope, order);
+    if (firstWord) savePosition(0, getWordKey(firstWord), scope, order);
   };
 
   const handlePauseResume = () => {
@@ -381,7 +400,7 @@ export default function ListenSpeedPage() {
   const handleResumeFromStart = () => {
     setResumeInfo({ index: 0, show: false });
     const firstWord = wordsRef.current[0];
-    if (firstWord) savePosition(0, firstWord.id, scope, order);
+    if (firstWord) savePosition(0, getWordKey(firstWord), scope, order);
     goToWord(0, { autoPlay: false });
   };
 
