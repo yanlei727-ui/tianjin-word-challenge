@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Pause, SkipBack, SkipForward, RotateCcw, Eye, EyeOff, Settings, X, ArrowLeft } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, RotateCcw, Eye, EyeOff, Settings, X, Hash } from 'lucide-react';
 import { getModuleWords, MODULES, type ModuleKey } from '../utils/modules';
 import { loadProgress, loadFavorites } from '../utils/storage';
 import { speak, stopSpeaking } from '../utils/speech';
@@ -14,6 +14,30 @@ const SLOW_RATE = 0.65;
 const WORD_SPEAK_DURATION = 1200;
 const PAUSE_BETWEEN = 1000;
 const PAUSE_AFTER_ALL_REPEATS = 2000;
+
+// localStorage key helpers
+function getPositionKey(scope: Order, order: Order): string {
+  return `ls_position_${scope}_${order}`;
+}
+
+function savePosition(index: number, scope: Order, order: Order): void {
+  try {
+    localStorage.setItem(getPositionKey(scope, order), JSON.stringify({
+      index,
+      updatedAt: Date.now(),
+    }));
+  } catch { /* ignore */ }
+}
+
+function loadPosition(scope: Order, order: Order): { index: number; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem(getPositionKey(scope, order));
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (typeof data?.index !== 'number') return null;
+    return data;
+  } catch { return null; }
+}
 
 export default function ListenSpeedPage() {
   // Settings
@@ -34,6 +58,14 @@ export default function ListenSpeedPage() {
   const [totalSpokenCount, setTotalSpokenCount] = useState(0);
   const [startTime, setStartTime] = useState<number>(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Jump modal
+  const [showJumpModal, setShowJumpModal] = useState(false);
+  const [jumpInput, setJumpInput] = useState('');
+  const [jumpError, setJumpError] = useState('');
+
+  // Resume prompt
+  const [resumeInfo, setResumeInfo] = useState<{ index: number; show: boolean }>({ index: 0, show: false });
 
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const isPausedRef = useRef(false);
@@ -89,6 +121,7 @@ export default function ListenSpeedPage() {
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
   useEffect(() => { repeatCountRef.current = repeatCount; }, [repeatCount]);
 
+  // ── Unified timer helpers ──────────────────────────────────
   const clearAllTimers = useCallback(() => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
@@ -103,6 +136,39 @@ export default function ListenSpeedPage() {
     timersRef.current.push(id);
   }, []);
 
+  // ── Unified goToWord ───────────────────────────────────────
+  const goToWord = useCallback((targetIndex: number, opts?: { autoPlay?: boolean }) => {
+    const currentWords = wordsRef.current;
+    if (targetIndex < 0 || targetIndex >= currentWords.length) return;
+
+    // 1. Stop everything
+    clearAllTimers();
+
+    // 2. Update state
+    setCurrentIndex(targetIndex);
+    setShowMeaning(false);
+    setCurrentRepeat(0);
+    setIsCompleted(false);
+
+    // 3. Save position
+    savePosition(targetIndex, scope, order);
+
+    // 4. Auto-play if requested (or if currently playing and not paused)
+    const shouldPlay = opts?.autoPlay ?? (isPlayingRef.current && !isPausedRef.current);
+    if (shouldPlay) {
+      setIsPlaying(true);
+      setIsPaused(false);
+      // Small delay to let React render before speaking
+      scheduleTimer(() => {
+        if (isPlayingRef.current && !isPausedRef.current) {
+          const w = wordsRef.current[targetIndex];
+          if (w) speakCurrentWord(w.word, 0);
+        }
+      }, 80);
+    }
+  }, [clearAllTimers, scheduleTimer, scope, order]);
+
+  // ── Play logic ─────────────────────────────────────────────
   const advanceToNext = useCallback(() => {
     const currentWords = wordsRef.current;
     if (order === 'random') {
@@ -115,7 +181,7 @@ export default function ListenSpeedPage() {
       do {
         next = Math.floor(Math.random() * currentWords.length);
       } while (next === currentIndexRef.current);
-      setCurrentIndex(next);
+      goToWord(next, { autoPlay: true });
     } else {
       const next = currentIndexRef.current + 1;
       if (next >= currentWords.length) {
@@ -123,19 +189,16 @@ export default function ListenSpeedPage() {
         setIsPlaying(false);
         return;
       }
-      setCurrentIndex(next);
+      goToWord(next, { autoPlay: true });
     }
-    setShowMeaning(false);
-    setCurrentRepeat(0);
-  }, [order]);
+  }, [order, goToWord]);
 
-  const playCurrentWord = useCallback((word: string, fromRepeat: number = 0) => {
+  const speakCurrentWord = useCallback((word: string, fromRepeat: number = 0) => {
     clearAllTimers();
     setCurrentRepeat(fromRepeat);
 
     const speakNext = (rep: number) => {
       if (rep >= repeatCountRef.current) {
-        // All repeats done, pause then advance
         scheduleTimer(() => {
           if (!isPausedRef.current && isPlayingRef.current) {
             advanceToNext();
@@ -144,7 +207,6 @@ export default function ListenSpeedPage() {
         return;
       }
 
-      // Slow rate on the last repeat
       const rate = rep === repeatCountRef.current - 1 ? SLOW_RATE : NORMAL_RATE;
       speak(word, rate);
       setCurrentRepeat(rep + 1);
@@ -161,15 +223,15 @@ export default function ListenSpeedPage() {
     speakNext(fromRepeat);
   }, [clearAllTimers, scheduleTimer, advanceToNext]);
 
-  // Auto-play driver
+  // ── Auto-play driver ───────────────────────────────────────
   useEffect(() => {
     if (isPlaying && !isPaused && !isCompleted && words.length > 0 && currentWord) {
-      playCurrentWord(currentWord.word, 0);
+      speakCurrentWord(currentWord.word, 0);
     }
     return () => clearAllTimers();
   }, [currentIndex, isPlaying, isPaused, isCompleted, currentWord?.id]);
 
-  // Elapsed time counter
+  // ── Elapsed time counter ───────────────────────────────────
   useEffect(() => {
     if (!isPlaying || isPaused || isCompleted) return;
     const interval = setInterval(() => {
@@ -178,11 +240,21 @@ export default function ListenSpeedPage() {
     return () => clearInterval(interval);
   }, [isPlaying, isPaused, isCompleted, startTime]);
 
-  // Cleanup on unmount
+  // ── Cleanup on unmount ─────────────────────────────────────
   useEffect(() => {
     return () => { clearAllTimers(); };
   }, []);
 
+  // ── Resume prompt on entry ─────────────────────────────────
+  useEffect(() => {
+    if (words.length === 0) return;
+    const saved = loadPosition(scope, order);
+    if (saved && saved.index > 0 && saved.index < words.length) {
+      setResumeInfo({ index: saved.index, show: true });
+    }
+  }, [scope, order, words.length]);
+
+  // ── Handlers ───────────────────────────────────────────────
   const handleStart = () => {
     setIsPlaying(true);
     setIsPaused(false);
@@ -193,6 +265,7 @@ export default function ListenSpeedPage() {
     setTotalSpokenCount(0);
     setStartTime(Date.now());
     setElapsedTime(0);
+    savePosition(0, scope, order);
   };
 
   const handlePauseResume = () => {
@@ -205,37 +278,17 @@ export default function ListenSpeedPage() {
   };
 
   const handlePrev = () => {
-    clearAllTimers();
     const prev = order === 'random'
       ? Math.floor(Math.random() * words.length)
       : (currentIndex - 1 + words.length) % words.length;
-    setCurrentIndex(prev);
-    setShowMeaning(false);
-    setCurrentRepeat(0);
-    if (isPlaying && !isPaused) {
-      scheduleTimer(() => {
-        if (isPlayingRef.current && !isPausedRef.current) {
-          playCurrentWord(words[prev].word, 0);
-        }
-      }, 100);
-    }
+    goToWord(prev, { autoPlay: isPlayingRef.current && !isPausedRef.current });
   };
 
   const handleNext = () => {
-    clearAllTimers();
     const next = order === 'random'
       ? Math.floor(Math.random() * words.length)
       : (currentIndex + 1) % words.length;
-    setCurrentIndex(next);
-    setShowMeaning(false);
-    setCurrentRepeat(0);
-    if (isPlaying && !isPaused) {
-      scheduleTimer(() => {
-        if (isPlayingRef.current && !isPausedRef.current) {
-          playCurrentWord(words[next].word, 0);
-        }
-      }, 100);
-    }
+    goToWord(next, { autoPlay: isPlayingRef.current && !isPausedRef.current });
   };
 
   const handleReplay = () => {
@@ -243,7 +296,7 @@ export default function ListenSpeedPage() {
     setShowMeaning(false);
     setCurrentRepeat(0);
     if (currentWord) {
-      playCurrentWord(currentWord.word, 0);
+      speakCurrentWord(currentWord.word, 0);
     }
   };
 
@@ -257,6 +310,48 @@ export default function ListenSpeedPage() {
     setIsPaused(false);
   };
 
+  // ── Jump modal ─────────────────────────────────────────────
+  const openJumpModal = () => {
+    setJumpInput(String(currentIndex + 1));
+    setJumpError('');
+    setShowJumpModal(true);
+  };
+
+  const handleJumpConfirm = () => {
+    const trimmed = jumpInput.trim();
+    if (!trimmed) {
+      setJumpError('请输入序号');
+      return;
+    }
+    const num = Number(trimmed);
+    if (!Number.isInteger(num) || num < 1 || num > words.length) {
+      setJumpError(`请输入1—${words.length}之间的整数`);
+      return;
+    }
+    const targetIndex = num - 1;
+    setShowJumpModal(false);
+    goToWord(targetIndex, { autoPlay: isPlayingRef.current && !isPausedRef.current });
+  };
+
+  const handleJumpQuick = (targetIndex: number) => {
+    setShowJumpModal(false);
+    goToWord(targetIndex, { autoPlay: isPlayingRef.current && !isPausedRef.current });
+  };
+
+  // ── Resume handlers ────────────────────────────────────────
+  const handleResumeContinue = () => {
+    const idx = resumeInfo.index;
+    setResumeInfo({ index: 0, show: false });
+    goToWord(idx, { autoPlay: false });
+  };
+
+  const handleResumeFromStart = () => {
+    setResumeInfo({ index: 0, show: false });
+    savePosition(0, scope, order);
+    goToWord(0, { autoPlay: false });
+  };
+
+  // ── Helpers ────────────────────────────────────────────────
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -264,9 +359,8 @@ export default function ListenSpeedPage() {
   };
 
   const scopeLabel = { all: '全部单词', unmastered: '未掌握单词', favorite: '收藏单词', wrong: '错题单词' };
-  const repeatLabel: Record<RepeatCount, string> = { 1: '1次', 2: '2次', 3: '3次', 5: '5次' };
 
-  // Empty state
+  // ── Empty state ────────────────────────────────────────────
   if (words.length === 0) {
     return (
       <div className="page">
@@ -286,7 +380,7 @@ export default function ListenSpeedPage() {
     );
   }
 
-  // Completion state
+  // ── Completion state ───────────────────────────────────────
   if (isCompleted) {
     return (
       <div className="page">
@@ -328,6 +422,7 @@ export default function ListenSpeedPage() {
     );
   }
 
+  // ── Main render ────────────────────────────────────────────
   return (
     <div className="page">
       <div className="ls-page">
@@ -342,9 +437,11 @@ export default function ListenSpeedPage() {
           </div>
         </div>
 
-        {/* Progress */}
+        {/* Progress — clickable */}
         <div className="ls-progress-row">
-          <span className="ls-progress-text">{currentIndex + 1} / {words.length}</span>
+          <span className="ls-progress-text ls-progress-clickable" onClick={openJumpModal} title="点击选择起始位置">
+            第 {currentIndex + 1} / {words.length} 个
+          </span>
           <div className="ls-progress-bar">
             <div
               className="ls-progress-fill"
@@ -417,6 +514,9 @@ export default function ListenSpeedPage() {
           </div>
 
           <div className="ls-controls-secondary">
+            <button className="ls-toggle-btn" onClick={openJumpModal}>
+              <Hash size={14} /> 从第 {currentIndex + 1} 个开始
+            </button>
             <button className={`ls-toggle-btn ${showMeaning ? 'active' : ''}`} onClick={handleToggleMeaning}>
               {showMeaning ? <><EyeOff size={14} /> 隐藏释义</> : <><Eye size={14} /> 显示释义</>}
             </button>
@@ -425,7 +525,77 @@ export default function ListenSpeedPage() {
         </div>
       </div>
 
-      {/* Settings modal */}
+      {/* ── Resume prompt ──────────────────────────────── */}
+      {resumeInfo.show && (
+        <div className="ls-resume-bar">
+          <span className="ls-resume-text">上次听到第 {resumeInfo.index + 1} 个单词</span>
+          <div className="ls-resume-actions">
+            <button className="ls-resume-btn primary" onClick={handleResumeContinue}>继续上次</button>
+            <button className="ls-resume-btn" onClick={handleResumeFromStart}>从头开始</button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Jump-to-position modal ─────────────────────── */}
+      {showJumpModal && (
+        <div className="ls-modal-overlay" onClick={() => setShowJumpModal(false)}>
+          <div className="ls-modal ls-modal-sm" onClick={e => e.stopPropagation()}>
+            <div className="ls-modal-header">
+              <h3>选择开始位置</h3>
+              <button className="ls-modal-close" onClick={() => setShowJumpModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="ls-modal-body">
+              <div className="ls-jump-input-row">
+                <input
+                  className="ls-jump-input"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={words.length}
+                  value={jumpInput}
+                  onChange={e => {
+                    setJumpInput(e.target.value);
+                    setJumpError('');
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter') handleJumpConfirm(); }}
+                  autoFocus
+                />
+                <span className="ls-jump-total">/ {words.length}</span>
+              </div>
+              {jumpError && <div className="ls-jump-error">{jumpError}</div>}
+
+              <div className="ls-jump-shortcuts">
+                <button className="ls-option-btn" onClick={() => handleJumpQuick(0)}>
+                  从第1个开始
+                </button>
+                <button className="ls-option-btn" onClick={() => {
+                  const saved = loadPosition(scope, order);
+                  if (saved && saved.index > 0 && saved.index < words.length) {
+                    handleJumpQuick(saved.index);
+                  }
+                }}>
+                  继续上次位置
+                </button>
+                <button className="ls-option-btn" onClick={() => handleJumpQuick(currentIndex)}>
+                  从当前单词开始
+                </button>
+              </div>
+            </div>
+
+            <div className="ls-modal-footer">
+              <button className="ls-option-btn" onClick={() => setShowJumpModal(false)}>取消</button>
+              <button className="ls-start-btn" style={{ fontSize: '0.95rem', padding: '10px 28px' }} onClick={handleJumpConfirm}>
+                从这里开始
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Settings modal ─────────────────────────────── */}
       {showSettings && (
         <div className="ls-modal-overlay" onClick={() => setShowSettings(false)}>
           <div className="ls-modal" onClick={e => e.stopPropagation()}>

@@ -6436,6 +6436,129 @@ body {
   border-top: 1px solid var(--gray-200);
   display: flex;
   justify-content: center;
+  gap: 10px;
+}
+
+/* Clickable progress text */
+.ls-progress-clickable {
+  cursor: pointer;
+  transition: color 0.15s;
+  border-bottom: 1px dashed var(--gray-400);
+  padding-bottom: 1px;
+}
+
+.ls-progress-clickable:hover {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Jump modal - compact */
+.ls-modal-sm {
+  max-width: 360px;
+}
+
+.ls-jump-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ls-jump-input {
+  width: 100px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+
+.ls-jump-input::-webkit-outer-spin-button,
+.ls-jump-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ls-jump-input:focus {
+  border-color: var(--primary);
+}
+
+.ls-jump-total {
+  font-size: 1rem;
+  color: var(--gray-500);
+}
+
+.ls-jump-error {
+  font-size: 0.8rem;
+  color: var(--red);
+  margin-top: 6px;
+}
+
+.ls-jump-shortcuts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* Resume bar */
+.ls-resume-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  animation: ls-slideDown 0.25s ease;
+}
+
+@keyframes ls-slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ls-resume-text {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+.ls-resume-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ls-resume-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-600);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ls-resume-btn:hover {
+  border-color: var(--gray-300);
+}
+
+.ls-resume-btn.primary {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+  font-weight: 600;
 }
 
 /* Responsive */
@@ -6478,5 +6601,15 @@ body {
 
   .ls-stat-value {
     font-size: 1.2rem;
+  }
+
+  .ls-resume-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ls-jump-input {
+    width: 80px;
+    font-size: 1.1rem;
   }
 }
