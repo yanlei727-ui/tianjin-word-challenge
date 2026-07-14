@@ -16,11 +16,11 @@ const PAUSE_BETWEEN = 1000;
 const PAUSE_AFTER_ALL_REPEATS = 2000;
 
 // localStorage key helpers
-function getPositionKey(scope: Order, order: Order): string {
+function getPositionKey(scope: Scope, order: Order): string {
   return `ls_position_${scope}_${order}`;
 }
 
-function savePosition(index: number, scope: Order, order: Order): void {
+function savePosition(index: number, scope: Scope, order: Order): void {
   try {
     localStorage.setItem(getPositionKey(scope, order), JSON.stringify({
       index,
@@ -29,7 +29,7 @@ function savePosition(index: number, scope: Order, order: Order): void {
   } catch { /* ignore */ }
 }
 
-function loadPosition(scope: Order, order: Order): { index: number; updatedAt: number } | null {
+function loadPosition(scope: Scope, order: Order): { index: number; updatedAt: number } | null {
   try {
     const raw = localStorage.getItem(getPositionKey(scope, order));
     if (!raw) return null;
