@@ -16,20 +16,23 @@ const PAUSE_BETWEEN = 1000;
 const PAUSE_AFTER_ALL_REPEATS = 2000;
 
 // localStorage key helpers
+const ORDER_KEY = 'ls_playback_order';
+
 function getPositionKey(scope: Scope, order: Order): string {
   return `ls_position_${scope}_${order}`;
 }
 
-function savePosition(index: number, scope: Scope, order: Order): void {
+function savePosition(index: number, wordId: number, scope: Scope, order: Order): void {
   try {
     localStorage.setItem(getPositionKey(scope, order), JSON.stringify({
       index,
+      wordId,
       updatedAt: Date.now(),
     }));
   } catch { /* ignore */ }
 }
 
-function loadPosition(scope: Scope, order: Order): { index: number; updatedAt: number } | null {
+function loadPosition(scope: Scope, order: Order): { index: number; wordId?: number; updatedAt: number } | null {
   try {
     const raw = localStorage.getItem(getPositionKey(scope, order));
     if (!raw) return null;
@@ -39,10 +42,22 @@ function loadPosition(scope: Scope, order: Order): { index: number; updatedAt: n
   } catch { return null; }
 }
 
+function saveOrderSetting(order: Order): void {
+  try { localStorage.setItem(ORDER_KEY, order); } catch { /* ignore */ }
+}
+
+function loadOrderSetting(): Order {
+  try {
+    const raw = localStorage.getItem(ORDER_KEY);
+    if (raw === 'random' || raw === 'sequential') return raw;
+  } catch { /* ignore */ }
+  return 'sequential';
+}
+
 export default function ListenSpeedPage() {
   // Settings
   const [repeatCount, setRepeatCount] = useState<RepeatCount>(3);
-  const [order, setOrder] = useState<Order>('sequential');
+  const [order, setOrder] = useState<Order>(loadOrderSetting);
   const [scope, setScope] = useState<Scope>('all');
   const [showSettings, setShowSettings] = useState(false);
 
@@ -58,6 +73,11 @@ export default function ListenSpeedPage() {
   const [totalSpokenCount, setTotalSpokenCount] = useState(0);
   const [startTime, setStartTime] = useState<number>(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  const handleSetOrder = (newOrder: Order) => {
+    setOrder(newOrder);
+    saveOrderSetting(newOrder);
+  };
 
   // Jump modal
   const [showJumpModal, setShowJumpModal] = useState(false);
@@ -151,7 +171,8 @@ export default function ListenSpeedPage() {
     setIsCompleted(false);
 
     // 3. Save position
-    savePosition(targetIndex, scope, order);
+    const targetWord = wordsRef.current[targetIndex];
+    if (targetWord) savePosition(targetIndex, targetWord.id, scope, order);
 
     // 4. Auto-play if requested (or if currently playing and not paused)
     const shouldPlay = opts?.autoPlay ?? (isPlayingRef.current && !isPausedRef.current);
@@ -249,8 +270,19 @@ export default function ListenSpeedPage() {
   useEffect(() => {
     if (words.length === 0) return;
     const saved = loadPosition(scope, order);
-    if (saved && saved.index > 0 && saved.index < words.length) {
-      setResumeInfo({ index: saved.index, show: true });
+    if (!saved || saved.index <= 0) return;
+
+    if (order === 'random' && saved.wordId) {
+      // Random mode: find word by ID in current shuffled list
+      const foundIndex = words.findIndex(w => w.id === saved.wordId);
+      if (foundIndex > 0) {
+        setResumeInfo({ index: foundIndex, show: true });
+      }
+    } else {
+      // Sequential mode: use saved index directly
+      if (saved.index < words.length) {
+        setResumeInfo({ index: saved.index, show: true });
+      }
     }
   }, [scope, order, words.length]);
 
@@ -265,7 +297,8 @@ export default function ListenSpeedPage() {
     setTotalSpokenCount(0);
     setStartTime(Date.now());
     setElapsedTime(0);
-    savePosition(0, scope, order);
+    const firstWord = wordsRef.current[0];
+    if (firstWord) savePosition(0, firstWord.id, scope, order);
   };
 
   const handlePauseResume = () => {
@@ -347,7 +380,8 @@ export default function ListenSpeedPage() {
 
   const handleResumeFromStart = () => {
     setResumeInfo({ index: 0, show: false });
-    savePosition(0, scope, order);
+    const firstWord = wordsRef.current[0];
+    if (firstWord) savePosition(0, firstWord.id, scope, order);
     goToWord(0, { autoPlay: false });
   };
 
@@ -411,7 +445,7 @@ export default function ListenSpeedPage() {
             <div className="ls-completion-actions">
               <button className="ls-start-btn" onClick={handleStart}>再听一遍</button>
               <button className="ls-start-btn secondary" onClick={() => {
-                setOrder('random');
+                handleSetOrder('random');
                 handleStart();
               }}>随机复习</button>
               <Link to="/vocabulary" className="ls-exit-link" onClick={handleExit}>返回词汇中心</Link>
@@ -627,13 +661,13 @@ export default function ListenSpeedPage() {
                 <div className="ls-setting-options">
                   <button
                     className={`ls-option-btn ${order === 'sequential' ? 'active' : ''}`}
-                    onClick={() => setOrder('sequential')}
+                    onClick={() => handleSetOrder('sequential')}
                   >
                     顺序播放
                   </button>
                   <button
                     className={`ls-option-btn ${order === 'random' ? 'active' : ''}`}
-                    onClick={() => setOrder('random')}
+                    onClick={() => handleSetOrder('random')}
                   >
                     随机播放
                   </button>
