@@ -6431,6 +6431,31 @@ body {
   font-weight: 600;
 }
 
+.ls-select {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-600);
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s;
+}
+
+.ls-select:hover {
+  border-color: var(--gray-300);
+}
+
+.ls-select:focus {
+  border-color: var(--primary);
+}
+
+.ls-toggle-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .ls-modal-footer {
   padding: 16px 20px;
   border-top: 1px solid var(--gray-200);

@@ -17,7 +17,6 @@ import QuickReviewPage from './pages/QuickReviewPage';
 import ChoiceQuizPage from './pages/ChoiceQuizPage';
 import FavoritesPage from './pages/FavoritesPage';
 import FavoriteQuizPage from './pages/FavoriteQuizPage';
-import AutoRecognizePage from './pages/AutoRecognizePage';
 import ListenSpeedPage from './pages/ListenSpeedPage';
 import './index.css';
 
@@ -47,7 +46,7 @@ export default function App() {
             <Route path="/choice-quiz" element={<ChoiceQuizPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-quiz" element={<FavoriteQuizPage />} />
-            <Route path="/auto-recognize" element={<AutoRecognizePage />} />
+            <Route path="/auto-recognize" element={<ListenSpeedPage />} />
             <Route path="/listen-speed" element={<ListenSpeedPage />} />
           </Routes>
         </main>
