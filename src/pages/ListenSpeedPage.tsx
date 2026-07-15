@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Play, Pause, SkipBack, SkipForward, RotateCcw, Eye, EyeOff, Settings, X, Hash } from 'lucide-react';
-import { getModuleWords, MODULES, type ModuleKey } from '../utils/modules';
+import { getModuleWords, MODULES, type ModuleKey, isValidModule } from '../utils/modules';
 import { loadProgress, loadFavorites } from '../utils/storage';
 import { speak, stopSpeaking } from '../utils/speech';
 
 type Scope = 'all' | 'unmastered' | 'favorite' | 'wrong';
 type Order = 'sequential' | 'random';
-type RepeatCount = 1 | 2 | 3 | 5;
+type RepeatCount = 1 | 2 | 3 | 4 | 5;
 
 const NORMAL_RATE = 0.85;
 const SLOW_RATE = 0.65;
@@ -17,6 +17,8 @@ const PAUSE_AFTER_ALL_REPEATS = 2000;
 
 // localStorage key helpers
 const ORDER_KEY = 'ls_playback_order';
+const MODULE_KEY = 'ls_playback_module';
+const REPEAT_KEY = 'ls_playback_repeat';
 
 type WordItem = { module: ModuleKey; id: number; [k: string]: unknown };
 
@@ -24,13 +26,13 @@ function getWordKey(word: WordItem): string {
   return `${word.module}_${word.id}`;
 }
 
-function getPositionKey(scope: Scope, order: Order): string {
-  return `ls_position_${scope}_${order}`;
+function getPositionKey(module: ModuleKey, scope: Scope, order: Order): string {
+  return `ls_position_${module}_${scope}_${order}`;
 }
 
-function savePosition(index: number, wordKey: string, scope: Scope, order: Order): void {
+function savePosition(index: number, wordKey: string, module: ModuleKey, scope: Scope, order: Order): void {
   try {
-    localStorage.setItem(getPositionKey(scope, order), JSON.stringify({
+    localStorage.setItem(getPositionKey(module, scope, order), JSON.stringify({
       index,
       wordKey,
       updatedAt: Date.now(),
@@ -38,9 +40,9 @@ function savePosition(index: number, wordKey: string, scope: Scope, order: Order
   } catch { /* ignore */ }
 }
 
-function loadPosition(scope: Scope, order: Order): { index: number; wordKey?: string; wordId?: number; updatedAt: number } | null {
+function loadPosition(module: ModuleKey, scope: Scope, order: Order): { index: number; wordKey?: string; wordId?: number; updatedAt: number } | null {
   try {
-    const raw = localStorage.getItem(getPositionKey(scope, order));
+    const raw = localStorage.getItem(getPositionKey(module, scope, order));
     if (!raw) return null;
     const data = JSON.parse(raw);
     if (typeof data?.index !== 'number') return null;
@@ -60,9 +62,41 @@ function loadOrderSetting(): Order {
   return 'sequential';
 }
 
+function saveModuleSetting(module: ModuleKey): void {
+  try { localStorage.setItem(MODULE_KEY, module); } catch { /* ignore */ }
+}
+
+function loadModuleSetting(): ModuleKey {
+  try {
+    const raw = localStorage.getItem(MODULE_KEY);
+    if (raw && isValidModule(raw)) return raw;
+  } catch { /* ignore */ }
+  return 'noun';
+}
+
+function saveRepeatSetting(repeat: RepeatCount): void {
+  try { localStorage.setItem(REPEAT_KEY, String(repeat)); } catch { /* ignore */ }
+}
+
+function loadRepeatSetting(): RepeatCount {
+  try {
+    const raw = localStorage.getItem(REPEAT_KEY);
+    const num = Number(raw);
+    if ([1, 2, 3, 4, 5].includes(num)) return num as RepeatCount;
+  } catch { /* ignore */ }
+  return 3;
+}
+
 export default function ListenSpeedPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // Settings
-  const [repeatCount, setRepeatCount] = useState<RepeatCount>(3);
+  const [module, setModule] = useState<ModuleKey>(() => {
+    const param = searchParams.get('module');
+    if (param && isValidModule(param)) return param;
+    return loadModuleSetting();
+  });
+  const [repeatCount, setRepeatCount] = useState<RepeatCount>(loadRepeatSetting);
   const [order, setOrder] = useState<Order>(loadOrderSetting);
   const [scope, setScope] = useState<Scope>('all');
   const [showSettings, setShowSettings] = useState(false);
@@ -85,6 +119,12 @@ export default function ListenSpeedPage() {
     saveOrderSetting(newOrder);
   };
 
+  const handleSetModule = (newModule: ModuleKey) => {
+    setModule(newModule);
+    setSearchParams({ module: newModule });
+    saveModuleSetting(newModule);
+  };
+
   // Jump modal
   const [showJumpModal, setShowJumpModal] = useState(false);
   const [jumpInput, setJumpInput] = useState('');
@@ -98,7 +138,7 @@ export default function ListenSpeedPage() {
   const isPlayingRef = useRef(false);
   const currentIndexRef = useRef(0);
   const repeatCountRef = useRef<RepeatCount>(3);
-  const wordsRef = useRef<ReturnType<typeof getModuleWords>>([]);
+  const wordsRef = useRef<{ word: string; phonetic: string; meaning: string; partOfSpeech: string; id: number; module: ModuleKey; example?: string; exampleZh?: string }[]>([]);
 
   // Build word list from all modules based on scope
   const words = useMemo(() => {
@@ -126,6 +166,11 @@ export default function ListenSpeedPage() {
       allWords = allWords.concat(filtered);
     }
 
+    // Filter by module if specified
+    if (module) {
+      allWords = allWords.filter(w => w.module === module);
+    }
+
     if (order === 'random') {
       const shuffled = [...allWords];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -136,7 +181,7 @@ export default function ListenSpeedPage() {
     }
 
     return allWords;
-  }, [scope, order]);
+  }, [scope, order, module]);
 
   wordsRef.current = words;
   const currentWord = words[currentIndex];
@@ -178,7 +223,7 @@ export default function ListenSpeedPage() {
 
     // 3. Save position
     const targetWord = wordsRef.current[targetIndex];
-    if (targetWord) savePosition(targetIndex, getWordKey(targetWord), scope, order);
+    if (targetWord) savePosition(targetIndex, getWordKey(targetWord), module, scope, order);
 
     // 4. Auto-play if requested (or if currently playing and not paused)
     const shouldPlay = opts?.autoPlay ?? (isPlayingRef.current && !isPausedRef.current);
@@ -234,12 +279,18 @@ export default function ListenSpeedPage() {
         return;
       }
 
-      const rate = rep === repeatCountRef.current - 1 ? SLOW_RATE : NORMAL_RATE;
+      const isLastRepeat = rep === repeatCountRef.current - 1;
+      const rate = isLastRepeat ? SLOW_RATE : NORMAL_RATE;
       speak(word, rate);
       setCurrentRepeat(rep + 1);
       setTotalSpokenCount(prev => prev + 1);
 
-      const pause = rep === repeatCountRef.current - 1 ? PAUSE_AFTER_ALL_REPEATS : PAUSE_BETWEEN;
+      // Show Chinese meaning on last repeat
+      if (isLastRepeat) {
+        setShowMeaning(true);
+      }
+
+      const pause = isLastRepeat ? PAUSE_AFTER_ALL_REPEATS : PAUSE_BETWEEN;
       scheduleTimer(() => {
         if (!isPausedRef.current && isPlayingRef.current) {
           speakNext(rep + 1);
@@ -275,7 +326,7 @@ export default function ListenSpeedPage() {
   // ── Resume prompt on entry ─────────────────────────────────
   useEffect(() => {
     if (words.length === 0) return;
-    const saved = loadPosition(scope, order);
+    const saved = loadPosition(module, scope, order);
     if (!saved || saved.index <= 0) return;
 
     if (order === 'random') {
@@ -317,7 +368,7 @@ export default function ListenSpeedPage() {
     setStartTime(Date.now());
     setElapsedTime(0);
     const firstWord = wordsRef.current[0];
-    if (firstWord) savePosition(0, getWordKey(firstWord), scope, order);
+    if (firstWord) savePosition(0, getWordKey(firstWord), module, scope, order);
   };
 
   const handlePauseResume = () => {
@@ -400,7 +451,7 @@ export default function ListenSpeedPage() {
   const handleResumeFromStart = () => {
     setResumeInfo({ index: 0, show: false });
     const firstWord = wordsRef.current[0];
-    if (firstWord) savePosition(0, getWordKey(firstWord), scope, order);
+    if (firstWord) savePosition(0, getWordKey(firstWord), module, scope, order);
     goToWord(0, { autoPlay: false });
   };
 
@@ -544,7 +595,7 @@ export default function ListenSpeedPage() {
             <div className="ls-meaning">{currentWord.meaning}</div>
           ) : (
             isPlaying && (
-              <div className="ls-meaning-hint">中文释义已隐藏 · 点击卡片显示</div>
+              <div className="ls-meaning-hint">最后一遍自动显示中文 · 点击卡片提前显示</div>
             )
           )}
         </div>
@@ -567,7 +618,11 @@ export default function ListenSpeedPage() {
           </div>
 
           <div className="ls-controls-secondary">
-            <button className="ls-toggle-btn" onClick={openJumpModal}>
+            <button
+              className={`ls-toggle-btn ${order === 'random' ? 'disabled' : ''}`}
+              onClick={order === 'random' ? undefined : openJumpModal}
+              title={order === 'random' ? '随机模式下无法指定起始位置' : '点击选择起始位置'}
+            >
               <Hash size={14} /> 从第 {currentIndex + 1} 个开始
             </button>
             <button className={`ls-toggle-btn ${showMeaning ? 'active' : ''}`} onClick={handleToggleMeaning}>
@@ -625,7 +680,7 @@ export default function ListenSpeedPage() {
                   从第1个开始
                 </button>
                 <button className="ls-option-btn" onClick={() => {
-                  const saved = loadPosition(scope, order);
+                  const saved = loadPosition(module, scope, order);
                   if (saved && saved.index > 0 && saved.index < words.length) {
                     handleJumpQuick(saved.index);
                   }
@@ -661,17 +716,36 @@ export default function ListenSpeedPage() {
 
             <div className="ls-modal-body">
               <div className="ls-setting-group">
-                <label className="ls-setting-label">播放次数</label>
+                <label className="ls-setting-label">学习模块</label>
                 <div className="ls-setting-options">
-                  {([1, 2, 3, 5] as RepeatCount[]).map(n => (
+                  {MODULES.map(m => (
                     <button
-                      key={n}
-                      className={`ls-option-btn ${repeatCount === n ? 'active' : ''}`}
-                      onClick={() => setRepeatCount(n)}
+                      key={m.key}
+                      className={`ls-option-btn ${module === m.key ? 'active' : ''}`}
+                      onClick={() => handleSetModule(m.key)}
                     >
-                      {n}次
+                      {m.icon} {m.label}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              <div className="ls-setting-group">
+                <label className="ls-setting-label">播放次数</label>
+                <div className="ls-setting-options">
+                  <select
+                    className="ls-select"
+                    value={repeatCount}
+                    onChange={e => {
+                      const val = Number(e.target.value) as RepeatCount;
+                      setRepeatCount(val);
+                      saveRepeatSetting(val);
+                    }}
+                  >
+                    {([1, 2, 3, 4, 5] as RepeatCount[]).map(n => (
+                      <option key={n} value={n}>{n}次</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
