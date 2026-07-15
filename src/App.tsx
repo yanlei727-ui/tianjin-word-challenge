@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import DesktopNavigation from './components/DesktopNavigation';
 import MobileBottomNavigation from './components/MobileBottomNavigation';
-import HomePage from './pages/HomePage';
 import VocabularyCenter from './pages/VocabularyCenter';
 import GrammarPage from './pages/GrammarPage';
 import ReadingPage from './pages/ReadingPage';
@@ -34,7 +33,7 @@ export default function App() {
         <main className="app-main">
           <Routes>
             {/* Core module routes */}
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<Navigate to="/vocabulary" replace />} />
             <Route path="/vocabulary" element={<VocabularyCenter />} />
             <Route path="/grammar" element={<GrammarPage />} />
             <Route path="/reading" element={<ReadingPage />} />
