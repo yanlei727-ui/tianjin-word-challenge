@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Shapes, FileText, ListChecks, NotebookTabs, Star, Target, Zap, Pencil, Headphones, FileInput, ArrowRight, AudioLines } from 'lucide-react';
+import { BookOpen, Shapes, FileText, ListChecks, NotebookTabs, Star, Target, Zap, Pencil, Headphones, FileInput, ArrowRight } from 'lucide-react';
 import { MODULES, getModuleWords } from '../utils/modules';
 import { loadProgress } from '../utils/storage';
 
@@ -101,13 +101,7 @@ export default function VocabularyCenter() {
             <span className="vc-training-name">听词速记</span>
             <span className="vc-training-desc">自动连续朗读单词，隐藏中文释义，快速建立词形与发音联系</span>
           </Link>
-          <Link to="/listen-speed" className="vc-training-card">
-            <div className="vc-training-icon" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
-              <AudioLines size={26} strokeWidth={2} />
-            </div>
-            <span className="vc-training-name">听词速记</span>
-            <span className="vc-training-desc">自动播放发音，快速建立声音与拼写联系</span>
-          </Link>
+
           <div className="vc-training-card coming-soon">
             <span className="vc-training-badge">即将上线</span>
             <div className="vc-training-icon">

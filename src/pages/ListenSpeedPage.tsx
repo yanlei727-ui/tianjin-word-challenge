@@ -497,7 +497,7 @@ export default function ListenSpeedPage() {
           </div>
           <div className="ls-completion">
             <div className="ls-completion-icon">🎉</div>
-            <div className="ls-completion-title">本轮听词速记完成！</div>
+            <div className="ls-completion-title">本轮自动认词完成！</div>
             <div className="ls-completion-stats">
               <div className="ls-stat-item">
                 <span className="ls-stat-value">{words.length}</span>

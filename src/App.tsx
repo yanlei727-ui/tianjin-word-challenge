@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import DesktopNavigation from './components/DesktopNavigation';
 import MobileBottomNavigation from './components/MobileBottomNavigation';
 import HomePage from './pages/HomePage';
@@ -19,6 +19,12 @@ import FavoritesPage from './pages/FavoritesPage';
 import FavoriteQuizPage from './pages/FavoriteQuizPage';
 import ListenSpeedPage from './pages/ListenSpeedPage';
 import './index.css';
+
+function ListenSpeedRedirect() {
+  const [searchParams] = useSearchParams();
+  const moduleParam = searchParams.get('module');
+  return <Navigate to={`/auto-recognize${moduleParam ? `?module=${moduleParam}` : ''}`} replace />;
+}
 
 export default function App() {
   return (
@@ -47,7 +53,7 @@ export default function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-quiz" element={<FavoriteQuizPage />} />
             <Route path="/auto-recognize" element={<ListenSpeedPage />} />
-            <Route path="/listen-speed" element={<ListenSpeedPage />} />
+            <Route path="/listen-speed" element={<ListenSpeedRedirect />} />
           </Routes>
         </main>
         <MobileBottomNavigation />
