@@ -102,22 +102,20 @@ export default function VocabularyCenter() {
             <span className="vc-training-desc">自动连续朗读单词，隐藏中文释义，快速建立词形与发音联系</span>
           </Link>
 
-          <div className="vc-training-card coming-soon">
-            <span className="vc-training-badge">即将上线</span>
+          <Link to="/spelling" className="vc-training-card">
             <div className="vc-training-icon">
               <Pencil size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">拼写训练</span>
             <span className="vc-training-desc">根据提示完成单词拼写</span>
-          </div>
-          <div className="vc-training-card coming-soon">
-            <span className="vc-training-badge">即将上线</span>
+          </Link>
+          <Link to="/context-fill" className="vc-training-card">
             <div className="vc-training-icon">
               <FileInput size={26} strokeWidth={2} />
             </div>
             <span className="vc-training-name">例句填空</span>
             <span className="vc-training-desc">结合语境完成单词填空</span>
-          </div>
+          </Link>
         </div>
       </section>
 

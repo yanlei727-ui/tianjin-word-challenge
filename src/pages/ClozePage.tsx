@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ListChecks, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
+import { ListChecks, ArrowLeft, ArrowRight } from 'lucide-react';
 import { sampleClozePassages } from '../data/sample-cloze';
 
 type View = 'list' | 'exercise';
@@ -28,17 +28,12 @@ export default function ClozePage() {
           <h2 className="cloze-title">{selectedPassage.title}</h2>
 
           <div className="cloze-article">
-            {selectedPassage.blanks.map((blank, i) => {
-              const parts = selectedPassage.content.split(`(${blank.index + 1})___`);
-              return (
-                <span key={i}>
-                  {parts[0]}
-                  <span className={`cloze-blank ${showResults ? (answers[blank.index] === blank.correctAnswer ? 'correct' : 'wrong') : ''}`}>
-                    {showResults ? blank.correctAnswer : (answers[blank.index] || `(${blank.index + 1})___`)}
-                  </span>
-                  {parts[1]}
-                </span>
-              );
+            {selectedPassage.content.split(/(\(\d+\)___)/g).map((part, i) => {
+              const match = part.match(/^\((\d+)\)___$/);
+              if (!match) return part;
+              const blank = selectedPassage.blanks.find((item) => item.index === Number(match[1]) - 1);
+              if (!blank) return part;
+              return <span key={i} className={`cloze-blank ${showResults ? (answers[blank.index] === blank.correctAnswer ? 'correct' : 'wrong') : ''}`}>{showResults ? blank.correctAnswer : (answers[blank.index] || part)}</span>;
             })}
           </div>
 
@@ -96,7 +91,6 @@ export default function ClozePage() {
           )}
         </div>
 
-        <div className="grammar-sample-tag">📌 示例内容，仅供框架验证</div>
       </div>
     );
   }
@@ -133,17 +127,6 @@ export default function ClozePage() {
         ))}
       </div>
 
-      <div className="shared-coming-soon">
-        <div className="shared-coming-icon">
-          <Construction size={20} />
-        </div>
-        <div className="shared-coming-body">
-          <div className="shared-coming-title">更多完形填空持续更新中</div>
-          <div className="shared-coming-tags">记叙文 · 说明文 · 议论文 · 逻辑训练 · 干扰项分析</div>
-        </div>
-      </div>
-
-      <div className="grammar-sample-tag">📌 以上为示例内容，更多完形填空持续添加中</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PenLine, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
+import { PenLine, ArrowLeft, ArrowRight } from 'lucide-react';
 import { sampleWritingTopics } from '../data/sample-writing';
 
 type View = 'list' | 'write';
@@ -81,7 +81,6 @@ export default function WritingPage() {
           )}
         </div>
 
-        <div className="grammar-sample-tag">📌 示例内容，仅供框架验证</div>
       </div>
     );
   }
@@ -115,17 +114,6 @@ export default function WritingPage() {
         ))}
       </div>
 
-      <div className="shared-coming-soon">
-        <div className="shared-coming-icon">
-          <Construction size={20} />
-        </div>
-        <div className="shared-coming-body">
-          <div className="shared-coming-title">更多作文题目持续更新中</div>
-          <div className="shared-coming-tags">书信写作 · 日记写作 · 议论文 · 看图作文 · 话题作文</div>
-        </div>
-      </div>
-
-      <div className="grammar-sample-tag">📌 以上为示例内容，更多作文题目持续添加中</div>
     </div>
   );
 }

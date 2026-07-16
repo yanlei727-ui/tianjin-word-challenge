@@ -18,6 +18,8 @@ import ChoiceQuizPage from './pages/ChoiceQuizPage';
 import FavoritesPage from './pages/FavoritesPage';
 import FavoriteQuizPage from './pages/FavoriteQuizPage';
 import ListenSpeedPage from './pages/ListenSpeedPage';
+import SpellingPracticePage from './pages/SpellingPracticePage';
+import ContextFillPage from './pages/ContextFillPage';
 import './index.css';
 
 function ListenSpeedRedirect() {
@@ -54,6 +56,8 @@ export default function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/favorite-quiz" element={<FavoriteQuizPage />} />
             <Route path="/auto-recognize" element={<ListenSpeedPage />} />
+            <Route path="/spelling" element={<SpellingPracticePage />} />
+            <Route path="/context-fill" element={<ContextFillPage />} />
             <Route path="/listen-speed" element={<ListenSpeedRedirect />} />
           </Routes>
         </main>

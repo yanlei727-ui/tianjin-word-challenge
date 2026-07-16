@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, ArrowLeft, ArrowRight, Construction } from 'lucide-react';
+import { FileText, ArrowLeft, ArrowRight } from 'lucide-react';
 import { sampleReadingPassages } from '../data/sample-reading';
 
 type View = 'list' | 'reading';
@@ -101,7 +101,6 @@ export default function ReadingPage() {
           )}
         </div>
 
-        <div className="grammar-sample-tag">📌 示例内容，仅供框架验证</div>
       </div>
     );
   }
@@ -140,17 +139,6 @@ export default function ReadingPage() {
         ))}
       </div>
 
-      <div className="shared-coming-soon">
-        <div className="shared-coming-icon">
-          <Construction size={20} />
-        </div>
-        <div className="shared-coming-body">
-          <div className="shared-coming-title">更多阅读内容持续更新中</div>
-          <div className="shared-coming-tags">日常生活 · 社会文化 · 科普知识 · 人物故事 · 图表信息</div>
-        </div>
-      </div>
-
-      <div className="grammar-sample-tag">📌 以上为示例内容，更多阅读文章持续添加中</div>
     </div>
   );
 }

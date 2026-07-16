@@ -3757,6 +3757,17 @@ body {
   color: #7A8496;
 }
 
+/* Spelling and context practice */
+.practice-page { max-width: 760px; }
+.practice-intro { margin: 16px 0; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--primary-bg); color: var(--gray-700); font-size: .9rem; }
+.practice-question { margin: 14px 0; padding: 18px; background: white; border: 1px solid var(--gray-200); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.practice-question-top { display: flex; align-items: center; justify-content: space-between; color: var(--gray-500); font-size: .82rem; font-weight: 600; }
+.practice-speak { display: inline-flex; padding: 6px; border: 0; border-radius: 7px; background: var(--primary-bg); color: var(--primary); cursor: pointer; }
+.practice-meaning { margin-top: 14px; font-size: 1.08rem; color: var(--gray-800); font-weight: 700; }.practice-meaning span { margin-left: 6px; color: var(--primary); font-size: .82rem; }
+.practice-hint, .practice-translation { margin: 8px 0; color: var(--gray-500); font-size: .88rem; }.practice-sentence { margin-top: 13px; color: var(--gray-800); font-size: 1.02rem; line-height: 1.7; }
+.practice-input { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font: inherit; outline: none; }.practice-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }.practice-input.correct { border-color: var(--green); background: var(--green-light); }.practice-input.wrong { border-color: var(--red); background: var(--red-light); }
+.practice-feedback { margin-top: 10px; padding: 9px 10px; border-radius: 7px; font-size: .88rem; }.practice-feedback.correct { color: var(--green); background: var(--green-light); }.practice-feedback.wrong { color: var(--red); background: var(--red-light); }.practice-result { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0; padding: 14px; background: white; border-radius: 10px; box-shadow: var(--shadow-sm); }
+
 /* Responsive: word list cards */
 @media (max-width: 1024px) {
   .vc-card-grid {
