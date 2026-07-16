@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PenLine, ArrowLeft, ArrowRight } from 'lucide-react';
+import { PenLine, ArrowLeft, ArrowRight, CheckCircle2, Lightbulb } from 'lucide-react';
 import { sampleWritingTopics } from '../data/sample-writing';
 
 type View = 'list' | 'write';
@@ -22,6 +22,8 @@ export default function WritingPage() {
 
         <div className="writing-exercise">
           <h2 className="writing-topic-title">{selectedTopic.title}</h2>
+          {selectedTopic.examYear && <div className="writing-exam-badge">天津中考 {selectedTopic.examYear} 真题训练 · 15 分书面表达</div>}
+          {selectedTopic.sourceNote && <p className="writing-source-note">题干依据：{selectedTopic.sourceNote}</p>}
 
           <div className="writing-prompt-card">
             <h3>写作要求</h3>
@@ -40,6 +42,12 @@ export default function WritingPage() {
                 <li key={i}>{item}</li>
               ))}
             </ol>
+          </div>
+
+          <div className="writing-method-card">
+            <div className="writing-method-title"><Lightbulb size={18} /> 考场写作四步法</div>
+            <ol className="writing-method-steps"><li>圈要点：把题目中的人物、事件、结果和感受逐项勾出。</li><li>定时态：故事经过用过去时，观点和感受用现在时。</li><li>搭骨架：开头点题，中间按顺序写，结尾写感受或建议。</li><li>最后检查：人称、动词形式、拼写和词数是否合适。</li></ol>
+            {selectedTopic.writingTips && <div className="writing-topic-tips">{selectedTopic.writingTips.map((tip) => <p key={tip}><CheckCircle2 size={15} /> {tip}</p>)}</div>}
           </div>
 
           <div className="writing-input-card">
@@ -92,25 +100,30 @@ export default function WritingPage() {
         <p className="module-page-subtitle">中考英语写作能力提升</p>
       </div>
 
-      <div className="module-intro-card">
-        <p>作文训练涵盖书信、日记、议论文、看图作文等常考题型，提供审题指导和范文参考。</p>
+      <div className="module-intro-card writing-hero-card">
+        <p><strong>先练真题，再学方法。</strong>天津中考书面表达常用书信形式，重点考查“把一件事写清楚，再说出自己的想法”。每道题都配有审题清单和初中生可学会的范文。</p>
       </div>
 
       <div className="writing-list">
-        {sampleWritingTopics.map((topic) => (
+        <h2 className="writing-list-heading">近三年天津中考真题</h2>
+        {sampleWritingTopics.filter((topic) => topic.examYear).sort((a, b) => (b.examYear || 0) - (a.examYear || 0)).map((topic) => (
           <button
             key={topic.id}
             className="writing-list-card"
             onClick={() => { setSelectedTopic(topic); setView('write'); }}
           >
             <div className="writing-list-info">
-              <div className="writing-list-title">{topic.title}</div>
+              <div className="writing-list-title">{topic.title} <span className="writing-year-tag">{topic.examYear}</span></div>
               <div className="writing-list-prompt">{topic.prompt}</div>
             </div>
             <div className="writing-list-arrow">
               <ArrowRight size={16} />
             </div>
           </button>
+        ))}
+        <h2 className="writing-list-heading writing-list-heading-extra">拓展主题练习</h2>
+        {sampleWritingTopics.filter((topic) => !topic.examYear).map((topic) => (
+          <button key={topic.id} className="writing-list-card" onClick={() => { setSelectedTopic(topic); setView('write'); }}><div className="writing-list-info"><div className="writing-list-title">{topic.title}</div><div className="writing-list-prompt">{topic.prompt}</div></div><div className="writing-list-arrow"><ArrowRight size={16} /></div></button>
         ))}
       </div>
 
