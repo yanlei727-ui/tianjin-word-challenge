@@ -64,7 +64,7 @@ export default function LearnPage() {
     if (mode === 'normal' && wordList.length > 0) {
       saveLastPosition(currentIndex, module);
     }
-  }, [currentIndex, mode, wordList.length, module]);
+  }, [currentIndex, currentWord, mode, wordList.length, module]);
 
   useEffect(() => {
     return () => stopSpeaking();
@@ -92,7 +92,7 @@ export default function LearnPage() {
     };
     speakNext();
     return () => { cancelled = true; };
-  }, [autoPlay, currentIndex, currentWord?.id, wordList.length]);
+  }, [autoPlay, currentIndex, currentWord?.id, currentWord?.word, wordList.length]);
 
   useEffect(() => {
     if (autoPlay && autoPlayScrollRef.current > 0) {

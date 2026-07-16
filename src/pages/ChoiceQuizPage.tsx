@@ -55,7 +55,7 @@ export default function ChoiceQuizPage() {
       pool = [...allWords];
     }
     setQuestions(generateRound(pool, ROUND_SIZE));
-  }, [mode, allWords]);
+  }, [mode, allWords, progress.wrongBook]);
 
   useEffect(() => {
     return () => stopSpeaking();
@@ -77,7 +77,7 @@ export default function ChoiceQuizPage() {
       setWrongWords((prev) => [...prev, { word: currentQ.word, meaning: currentQ.meaning }]);
     }
     speakWord(currentQ.word);
-  }, [showResult, currentQ]);
+  }, [showResult, currentQ, module]);
 
   const handleNext = useCallback(() => {
     setShowResult(false);

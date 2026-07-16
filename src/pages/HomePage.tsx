@@ -40,7 +40,7 @@ export default function HomePage() {
       <div className="home-continue-section">
         <h2 className="section-title">继续学习</h2>
         <div className="home-continue-grid">
-          <Link to="/vocabulary/learn?module=noun" className="home-continue-card">
+          <Link to="/learn?module=noun" className="home-continue-card">
             <div className="home-module-icon" style={{ width: 40, height: 40, borderRadius: 10 }}>
               <BookOpen size={22} strokeWidth={2} />
             </div>
