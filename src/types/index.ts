@@ -119,6 +119,7 @@ export interface WritingTopic {
   outline: string[];
   writingTips?: string[];
   referenceEssay?: string;
+  referenceEssays?: { label: string; description: string; content: string }[];
   goodSentences?: string[];
   isSample?: boolean;
 }

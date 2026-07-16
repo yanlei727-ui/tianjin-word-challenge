@@ -69,11 +69,13 @@ export default function WritingPage() {
           ) : (
             <div className="writing-reference-card">
               <h3>参考范文</h3>
-              <div className="writing-reference-text">
-                {selectedTopic.referenceEssay?.split('\n').map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
+              <p className="writing-reference-intro">{selectedTopic.referenceEssays ? '同一题目给出三种可背诵写法：先背基础版，再按自己的水平替换升级句。' : '这是一篇结构完整的标准版范文，建议先模仿它的段落顺序。'}</p>
+              {(selectedTopic.referenceEssays || (selectedTopic.referenceEssay ? [{ label: '标准版', description: '结构完整，适合直接模仿。', content: selectedTopic.referenceEssay }] : [])).map((essay) => (
+                <div className="writing-variant" key={essay.label}>
+                  <div className="writing-variant-head"><strong>{essay.label}</strong><span>{essay.description}</span></div>
+                  <div className="writing-reference-text">{essay.content.split('\n').map((para, i) => <p key={i}>{para}</p>)}</div>
+                </div>
+              ))}
 
               {selectedTopic.goodSentences && selectedTopic.goodSentences.length > 0 && (
                 <div className="writing-good-sentences">

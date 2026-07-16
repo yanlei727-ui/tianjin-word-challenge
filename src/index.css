@@ -5273,6 +5273,12 @@ body {
 .writing-reference-text p {
   margin-bottom: 8px;
 }
+.writing-reference-intro { margin: -2px 0 14px; color: var(--gray-500); font-size: .85rem; line-height: 1.55; }
+.writing-variant { padding: 15px 0; border-top: 1px solid var(--gray-200); }
+.writing-variant:first-of-type { border-top: 0; padding-top: 0; }
+.writing-variant-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.writing-variant-head strong { color: #6d28d9; font-size: .92rem; }
+.writing-variant-head span { color: var(--gray-500); font-size: .78rem; }
 
 .writing-good-sentences {
   margin-top: 16px;

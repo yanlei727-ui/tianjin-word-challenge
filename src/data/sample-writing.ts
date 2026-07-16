@@ -8,6 +8,11 @@ export const sampleWritingTopics: WritingTopic[] = [
     requirements: ['按顺序写清事情的起因、经过和结果', '写出年轻人前后的变化', '结尾表达你对文明乘车的看法'],
     outline: ['开头：说明想分享一件上学路上发生的事', '经过：外放视频影响乘客 → 老奶奶提醒 → 他道歉并调低音量', '结果：他主动让座', '结尾：文明和尊重能让公共生活更美好'],
     writingTips: ['这是书信中的“经历叙述”，主体用一般过去时。', '不要逐字翻译“很多人反感”，可写 Many passengers felt uncomfortable.', '最后一段必须写观点，不只复述事件。'],
+    referenceEssays: [
+      { label: '基础背诵版', description: '句子短，先把要点写全。', content: `Dear Brain,\n\nI would like to tell you something I saw on the bus.\n\nOne morning, a young man watched videos on his phone. The sound was very loud, so many people felt uncomfortable. An old lady asked him to turn it down. He said sorry and did so. At the next stop, he gave his seat to a mother with a baby.\n\nI think he did the right thing. We should be polite and care about others in public places.\n\nYours,\nLi Hua` },
+      { label: '标准背诵版', description: '逻辑完整，适合考场直接模仿。', content: `Dear Brain,\n\nHow is everything going? I would like to share one thing that happened on my way to school.\n\nOne morning, a young man was watching videos on his phone on the bus. The sound was so loud that many passengers felt uncomfortable. An old lady politely reminded him to turn it down. He said sorry to everyone and turned down the sound at once. At the next stop, he even offered his seat to a mother with a baby.\n\nI think his change was meaningful. We should follow rules and care about others in public places. In this way, we can make our city more civilized and friendly.\n\nYours,\nLi Hua` },
+      { label: '加分表达版', description: '保留简单词汇，加入自然的原因句。', content: `Dear Brain,\n\nI am happy to share a small but warm story with you.\n\nOn my way to school, I saw a young man watching videos loudly on the bus. People around him looked unhappy. An old lady reminded him in a kind way. He apologized and made the sound lower. What surprised me was that he later gave his seat to a mother holding a baby.\n\nFrom this experience, I learned that everyone can make public places better. A little respect for others can bring a lot of comfort.\n\nYours,\nLi Hua` },
+    ],
     referenceEssay: `Dear Brain,
 
 How is everything going? I would like to share one thing that happened on my way to school.
@@ -27,6 +32,11 @@ Li Hua`,
     requirements: ['交代时间、人物和地点', '完整描述帮助过程', '写出自己的感受或得到的启发'],
     outline: ['开头：介绍要分享王红做的一件好事', '经过：看见盲人徘徊 → 主动交流 → 扶他过马路', '细节：司机停车等候 → 王红告别老人', '结尾：赞美善意，号召从小事帮助他人'],
     writingTips: ['本题按时间顺序写，连接词可用 First, Then, Finally。', '“帮助某人过马路”写成 help sb. cross the road。', '人物故事的结尾可写：Her kindness moved me.'],
+    referenceEssays: [
+      { label: '基础背诵版', description: '句型简单，重点记住帮助过程。', content: `Dear Peter,\n\nI want to tell you a story about my classmate Wang Hong.\n\nLast Thursday, she saw a blind man at a street corner on her way home. He wanted to cross the road. Wang Hong talked with him and helped him cross it. She held his arm and walked slowly. The drivers stopped their cars and waited. Finally, she took him safely to the other side.\n\nI think Wang Hong is very kind. We should help people when they need us.\n\nYours,\nLi Hua` },
+      { label: '标准背诵版', description: '增加细节，适合写满80–100词。', content: `Dear Peter,\n\nIt is two weeks since you wrote to me. I am writing to tell you a story about my classmate Wang Hong.\n\nLast Thursday, Wang Hong saw a blind man wandering at a street corner on her way home. She talked with him and learned that he wanted to cross the road. Wang Hong offered to help him. She held his arm and walked with him slowly. When the drivers saw them, they stopped their cars and waited patiently. At last, Wang Hong took the man safely to the other side of the road and said goodbye to him.\n\nI think Wang Hong did a wonderful thing. Her kindness moved me. We should always be ready to help people around us.\n\nYours,\nLi Hua` },
+      { label: '加分表达版', description: '加入自然的感受句，仍然容易记忆。', content: `Dear Peter,\n\nLet me share a warm story about my classmate Wang Hong.\n\nOn her way home last Thursday, Wang Hong noticed a blind man waiting at a busy street corner. She asked if he needed help. Then she carefully helped him cross the road. All the drivers stopped and waited for them. After they reached the other side safely, the man thanked Wang Hong with a smile.\n\nI was proud of her. Her action shows that kindness is not difficult. We can begin by helping people around us.\n\nYours,\nLi Hua` },
+    ],
     referenceEssay: `Dear Peter,
 
 It is two weeks since you wrote to me. I am writing to tell you a story about my classmate Wang Hong.
@@ -46,6 +56,11 @@ Li Hua`,
     requirements: ['写清下雨天、老人、王亮和救护车等要点', '使用过去时叙述事件', '补充自己的感受'],
     outline: ['开头：告诉笔友想分享王亮的故事', '经过：雨天看见人群 → 发现老人倒地 → 蹲下撑伞', '结果：救护车到达，王亮悄悄离开', '结尾：表达感动和对善良的理解'],
     writingTips: ['叙事题优先保证“要点全”，再增加一个合理细节。', '“蹲下”可用 crouch down；“救护车”是 ambulance。', '不要把故事写成流水账，在结尾写出 why it touched you。'],
+    referenceEssays: [
+      { label: '基础背诵版', description: '短句为主，方便按顺序复述。', content: `Dear Peter,\n\nI would like to tell you a story about my classmate Wang Liang.\n\nOne rainy day, Wang Liang saw many people by the road. He went over and found an old woman on the ground. He crouched down and held an umbrella over her. He stayed with her in the rain. Soon, an ambulance came. After the doctors took the woman away, Wang Liang quietly left.\n\nI was moved by his kindness. We should help others when we can.\n\nYours,\nLi Hua` },
+      { label: '标准背诵版', description: '细节完整，适合真题写作长度。', content: `Dear Peter,\n\nHow is everything going? I would like to tell you a story about my classmate Wang Liang.\n\nOn a rainy day, Wang Liang saw a group of people standing by the road. He went over and found an old woman lying on the ground. After learning what had happened, he crouched down and held an umbrella over her. He stayed with the woman and kept her dry in the rain. Soon, an ambulance arrived. When the doctors took the woman away, Wang Liang quietly left.\n\nI was moved by his kindness. I believe that a small act of help can bring warmth to others.\n\nYours,\nLi Hua` },
+      { label: '加分表达版', description: '用一个结果句让故事更有温度。', content: `Dear Peter,\n\nHere is a touching story about my classmate Wang Liang.\n\nIt was raining hard one day. Wang Liang saw a crowd near the road and found an old woman lying there. He did not leave. Instead, he crouched down and used his umbrella to keep her dry. He waited quietly until the ambulance arrived. The doctors thanked him, but he only smiled and left.\n\nHis action touched me a lot. I have learned that even a small kindness can make a big difference.\n\nYours,\nLi Hua` },
+    ],
     referenceEssay: `Dear Peter,
 
 How is everything going? I would like to tell you a story about my classmate Wang Liang.
