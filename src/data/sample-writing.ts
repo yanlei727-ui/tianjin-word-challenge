@@ -134,4 +134,74 @@ Second, we can bring our own water bottles instead of buying bottled drinks ever
 Small actions can make a big difference. Let us start from ourselves and work together to make our school cleaner and greener.`,
     goodSentences: ['We can all do something to make it greener.（我们都能做些事让它更环保。）', 'This can save energy.（这能节约能源。）', 'Small actions can make a big difference.（小行动也能带来大改变。）'],
   },
+  {
+    id: 'writing-reading-habit', category: '阅读与成长', skillGoal: '学会“建议 + 理由 + 号召”结构', title: 'Reading Makes Me Grow',
+    prompt: '学校英语社团正在征集“我的阅读习惯”短文。请介绍你喜欢读什么、如何安排阅读时间，以及阅读给你带来的收获。词数不少于60词。',
+    requirements: ['介绍喜欢的书或阅读材料', '写出一个具体的阅读习惯', '说明阅读带来的收获'], outline: ['开头：说明自己喜欢阅读', '主体：喜欢读什么 + 什么时候读', '结尾：阅读带来的收获和坚持阅读的愿望'],
+    sentenceFrames: ['I enjoy reading ... because ...', 'I usually read for ... minutes after ...', 'Reading helps me ... and makes me ...'],
+    referenceEssay: `Reading Makes Me Grow
+
+Reading is one of my favorite hobbies. I enjoy reading stories and books about science because they are interesting and useful.
+
+I usually read for twenty minutes before I go to bed. When I meet new words, I write them down and look them up later. In this way, I can learn more words and understand the story better.
+
+Reading opens a new world for me. It helps me relax and learn new things. I will keep this good habit every day.`,
+    goodSentences: ['Reading opens a new world for me.（阅读为我打开了一个新世界。）', 'In this way, I can learn more words.（这样我能学到更多单词。）'],
+  },
+  {
+    id: 'writing-healthy-life', category: '健康生活', skillGoal: '学会“现状 + 建议 + 收获”结构', title: 'A Healthy Life Starts with Small Habits',
+    prompt: '学校英文公众号正在开展“健康生活”征文。请你写一篇短文，介绍两条保持健康的做法，并说明理由。词数不少于60词。',
+    requirements: ['提出至少两条健康建议', '说明每条建议的好处', '发出简单倡议'], outline: ['开头：健康对学生很重要', '主体：运动建议 + 饮食/睡眠建议', '结尾：从小习惯开始行动'],
+    sentenceFrames: ['It is important for us to stay healthy.', 'We should ... because ...', 'Let us start with small habits.'],
+    referenceEssay: `A Healthy Life Starts with Small Habits
+
+It is important for students to stay healthy. We do not need to do difficult things. Small habits can help us a lot.
+
+First, we should exercise every day. We can walk, run or play ball games after class. Exercise makes us strong. Second, we should eat more fruit and vegetables and go to bed early. Good food and enough sleep give us energy.
+
+Let us start with small habits and enjoy a healthy life.`,
+    goodSentences: ['Good food and enough sleep give us energy.（好的食物和充足睡眠给我们能量。）', 'Small habits can help us a lot.（小习惯能给我们很大帮助。）'],
+  },
+  {
+    id: 'writing-tianjin-guide', category: '天津文化', skillGoal: '学会“介绍地点 + 推荐活动 + 邀请”结构', title: 'Welcome to Tianjin',
+    prompt: '你的英国笔友计划来天津旅行。请写一封邮件，向他/她推荐一个你喜欢的天津地点或活动，并说明推荐理由。词数不少于60词。',
+    requirements: ['介绍一个天津地点或活动', '说明至少两个推荐理由', '表达欢迎和邀请'], outline: ['开头：欢迎朋友来天津', '主体：推荐地点 + 可以做什么 + 为什么喜欢', '结尾：邀请朋友来体验'],
+    sentenceFrames: ['Welcome to Tianjin!', 'I would like to recommend ...', 'You can ... and ...', 'I am sure you will enjoy it.'],
+    referenceEssay: `Welcome to Tianjin
+
+Welcome to Tianjin! I would like to recommend the Tianjin Eye to you. It is a famous place by the Haihe River.
+
+You can take a ride on it and enjoy a beautiful view of the city. After that, you can walk along the river and take some photos. I like this place because it is relaxing and you can see both old and new Tianjin.
+
+I am sure you will enjoy your trip here. I hope to show you around one day.`,
+    goodSentences: ['I would like to recommend ... to you.（我想向你推荐……）', 'You can enjoy a beautiful view of the city.（你能欣赏到城市的美景。）'],
+  },
+  {
+    id: 'writing-school-activity', category: '校园活动', skillGoal: '学会“活动经过 + 收获”叙事结构', title: 'An Activity I Will Never Forget',
+    prompt: '请写一篇短文，介绍一次难忘的学校活动。可以写运动会、艺术节、读书日或志愿服务活动。词数不少于60词。',
+    requirements: ['说明活动时间和内容', '写出一个具体细节', '写出自己的感受或收获'], outline: ['开头：交代活动名称和时间', '主体：写自己做了什么和一个难忘细节', '结尾：写感受和收获'],
+    sentenceFrames: ['Last ..., our school held ...', 'I took part in ...', 'Although ..., I felt ...', 'I learned that ...'],
+    referenceEssay: `An Activity I Will Never Forget
+
+Last month, our school held a sports meeting. I took part in the 800-meter race.
+
+At first, I was nervous because the race was long. When I wanted to slow down, my classmates shouted, “Come on!” for me. Their words gave me strength. I did not win first prize, but I finished the race.
+
+I was proud of myself. I learned that we should never give up when we meet difficulties.`,
+    goodSentences: ['Their words gave me strength.（他们的话给了我力量。）', 'We should never give up when we meet difficulties.（遇到困难时我们不应放弃。）'],
+  },
+  {
+    id: 'writing-study-plan', category: '学习计划', skillGoal: '学会“目标 + 做法 + 理由”结构', title: 'My English Learning Plan',
+    prompt: '新学期开始了，请以“My English Learning Plan”为题，写一篇短文，介绍你的英语学习目标和具体做法。词数不少于60词。',
+    requirements: ['写出一个英语学习目标', '提出至少两条具体做法', '说明坚持计划的原因'], outline: ['开头：说明新学期的英语目标', '主体：词汇计划 + 听读/写作计划', '结尾：表达坚持的决心'],
+    sentenceFrames: ['This term, I plan to ...', 'I will ... every day.', 'I believe practice makes perfect.'],
+    referenceEssay: `My English Learning Plan
+
+This term, I plan to improve my English step by step. My first goal is to learn more useful words.
+
+I will review ten words every day and use them in short sentences. I will also listen to English for fifteen minutes after dinner. On weekends, I will read a short passage and write down two good sentences.
+
+I know that learning English needs time. I believe practice makes perfect, so I will follow my plan carefully.`,
+    goodSentences: ['I plan to improve my English step by step.（我计划一步一步提高英语。）', 'I believe practice makes perfect.（我相信熟能生巧。）'],
+  },
 ];

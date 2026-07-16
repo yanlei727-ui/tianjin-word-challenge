@@ -112,12 +112,15 @@ export interface ClozeBlank {
 export interface WritingTopic {
   id: string;
   title: string;
+  category?: string;
+  skillGoal?: string;
   examYear?: number;
   sourceNote?: string;
   prompt: string;
   requirements: string[];
   outline: string[];
   writingTips?: string[];
+  sentenceFrames?: string[];
   referenceEssay?: string;
   referenceEssays?: { label: string; description: string; content: string }[];
   goodSentences?: string[];

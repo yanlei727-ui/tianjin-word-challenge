@@ -9,12 +9,13 @@ export default function WritingPage() {
   const [selectedTopic, setSelectedTopic] = useState<typeof sampleWritingTopics[0] | null>(null);
   const [userEssay, setUserEssay] = useState('');
   const [showReference, setShowReference] = useState(false);
+  const [coachStep, setCoachStep] = useState(0);
 
   if (view === 'write' && selectedTopic) {
     return (
       <div className="page writing-page">
         <div className="module-page-header">
-          <button className="btn-back" onClick={() => { setView('list'); setSelectedTopic(null); setUserEssay(''); setShowReference(false); }}>
+          <button className="btn-back" onClick={() => { setView('list'); setSelectedTopic(null); setUserEssay(''); setShowReference(false); setCoachStep(0); }}>
             <ArrowLeft size={16} style={{ marginRight: 4, verticalAlign: -2 }} /> 返回
           </button>
           <h1><PenLine size={20} style={{ marginRight: 6, verticalAlign: -3 }} /> 作文训练</h1>
@@ -48,6 +49,17 @@ export default function WritingPage() {
             <div className="writing-method-title"><Lightbulb size={18} /> 考场写作四步法</div>
             <ol className="writing-method-steps"><li>圈要点：把题目中的人物、事件、结果和感受逐项勾出。</li><li>定时态：故事经过用过去时，观点和感受用现在时。</li><li>搭骨架：开头点题，中间按顺序写，结尾写感受或建议。</li><li>最后检查：人称、动词形式、拼写和词数是否合适。</li></ol>
             {selectedTopic.writingTips && <div className="writing-topic-tips">{selectedTopic.writingTips.map((tip) => <p key={tip}><CheckCircle2 size={15} /> {tip}</p>)}</div>}
+          </div>
+
+          <div className="writing-coach-card">
+            <div className="writing-coach-heading"><Lightbulb size={18} /> 跟着淳淳一步一步写</div>
+            <div className="writing-coach-tabs">
+              {['读题', '列提纲', '写句子', '检查'].map((label, index) => <button key={label} className={coachStep === index ? 'active' : ''} onClick={() => setCoachStep(index)}><span>{index + 1}</span>{label}</button>)}
+            </div>
+            {coachStep === 0 && <p>把题目中的每个提示圈出来。完成后确认：人物、时间、事件、结果和感受，一个也不能漏。</p>}
+            {coachStep === 1 && <p>不用立刻写长句。先按“开头—经过/理由—结尾”写 3 组中文关键词，再把它们变成英文。</p>}
+            {coachStep === 2 && <div><p>先用下面的短句搭骨架，再补充自己的细节：</p><div className="writing-frame-list">{(selectedTopic.sentenceFrames || ['I would like to share ...', 'First, ... Then, ... Finally, ...', 'I think ... because ...']).map((frame) => <code key={frame}>{frame}</code>)}</div></div>}
+            {coachStep === 3 && <p>读一遍自己的作文：过去的事是否都用了过去时？每个要点是否写到？最后是否有自己的感受？再检查拼写和词数。</p>}
           </div>
 
           <div className="writing-input-card">
@@ -112,7 +124,7 @@ export default function WritingPage() {
           <button
             key={topic.id}
             className="writing-list-card"
-            onClick={() => { setSelectedTopic(topic); setView('write'); }}
+            onClick={() => { setSelectedTopic(topic); setView('write'); setCoachStep(0); }}
           >
             <div className="writing-list-info">
               <div className="writing-list-title">{topic.title} <span className="writing-year-tag">{topic.examYear}</span></div>
@@ -123,9 +135,9 @@ export default function WritingPage() {
             </div>
           </button>
         ))}
-        <h2 className="writing-list-heading writing-list-heading-extra">拓展主题练习</h2>
+        <h2 className="writing-list-heading writing-list-heading-extra">常考主题拓展</h2>
         {sampleWritingTopics.filter((topic) => !topic.examYear).map((topic) => (
-          <button key={topic.id} className="writing-list-card" onClick={() => { setSelectedTopic(topic); setView('write'); }}><div className="writing-list-info"><div className="writing-list-title">{topic.title}</div><div className="writing-list-prompt">{topic.prompt}</div></div><div className="writing-list-arrow"><ArrowRight size={16} /></div></button>
+          <button key={topic.id} className="writing-list-card" onClick={() => { setSelectedTopic(topic); setView('write'); setCoachStep(0); }}><div className="writing-list-info"><div className="writing-list-title">{topic.title} {topic.category && <span className="writing-category-tag">{topic.category}</span>}</div><div className="writing-list-prompt">{topic.prompt}</div></div><div className="writing-list-arrow"><ArrowRight size={16} /></div></button>
         ))}
       </div>
 
